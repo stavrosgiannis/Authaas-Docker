@@ -1,63 +1,85 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Authaas_Docker.Models;
 
-namespace Authaas_Docker.Models
+public class QueueItem<T>
 {
-    public class QueueItem<T>
+    public QueueItem(T data)
     {
-        public T Data { get; set; }
-        public bool IsProcessed { get; set; }
-
-        public QueueItem(T data)
-        {
-            Data = data;
-            IsProcessed = false;
-        }
+        Data = data;
+        IsProcessed = false;
     }
 
-    public class DownloadableItem
+    public T Data { get; set; }
+    public bool IsProcessed { get; set; }
+}
+
+public class DownloadableItem
+{
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public string RunArguments { get; set; }
+    public string Url { get; set; }
+    public string DestinationPath { get; set; }
+
+
+    public bool IsInstalled()
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string RunArguments { get; set; }
-        public string Url { get; set; }
-        public string DestinationPath { get; set; }
+        // TODO: Implement logic to check if the item is installed
+        throw new NotImplementedException();
+    }
 
-        public DownloadableItem(string url, string destinationPath)
+    /// <summary>
+    ///     Downloads a file from a given URL and saves it to a given destination path.
+    /// </summary>
+    /// <param name="progressBar">Progress bar to update the download progress.</param>
+    /// <returns>GenericResult indicating the success of the operation.</returns>
+    public async Task<GenericResult> DownloadFile(ProgressBar progressBar)
+    {
+        using (var client = new HttpClient())
         {
-            Url = url;
-            DestinationPath = destinationPath;
-        }
-
-        public bool IsInstalled()
-        {
-            // TODO: Implement logic to check if the item is installed
-            throw new NotImplementedException();
-        }
-
-        public async Task Download()
-        {
-            using (HttpClient client = new HttpClient())
+            using (var response = await client.GetAsync(new Uri(Url), HttpCompletionOption.ResponseHeadersRead))
+            using (var fileStream = new FileStream(DestinationPath, FileMode.Create, FileAccess.Write, FileShare.None))
+            using (var downloadStream = await response.Content.ReadAsStreamAsync())
             {
-                var response = await client.GetAsync(Url);
+                long totalBytes;
+                if (response.Content.Headers.ContentLength.HasValue)
+                    totalBytes = response.Content.Headers.ContentLength.Value;
+                else
+                    totalBytes = -1; // Indicate that the length is unknown
 
-                using (var fileStream = new FileStream(DestinationPath, FileMode.Create, FileAccess.Write, FileShare.None))
-                using (var stream = await response.Content.ReadAsStreamAsync())
+                var totalReadBytes = 0L;
+                var buffer = new byte[8192];
+                var isMoreToRead = true;
+
+                do
                 {
-                    await stream.CopyToAsync(fileStream);
-                }
+                    var readBytes = await downloadStream.ReadAsync(buffer, 0, buffer.Length);
+                    if (readBytes == 0)
+                    {
+                        isMoreToRead = false;
+                    }
+                    else
+                    {
+                        await fileStream.WriteAsync(buffer, 0, readBytes);
+
+                        totalReadBytes += readBytes;
+                        // Update progress bar
+                        if (totalBytes > 0)
+                        {
+                            var progressPercentage = (int)(totalReadBytes * 100 / totalBytes);
+                            progressBar.Value = progressPercentage;
+                        }
+                    }
+                } while (isMoreToRead);
             }
         }
 
-        public void Install()
-        {
-            // TODO: Implement logic to install the item
-            throw new NotImplementedException();
-        }
+        return GenericResult.Ok();
     }
 
+
+    public async Task<GenericResult> Install()
+    {
+        // TODO: Implement logic to install the item
+        throw new NotImplementedException();
+    }
 }

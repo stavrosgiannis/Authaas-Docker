@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             listBoxLogs = new ListBox();
+            progressBar1 = new ProgressBar();
             SuspendLayout();
             // 
             // listBoxLogs
@@ -36,26 +37,36 @@
             listBoxLogs.Dock = DockStyle.Top;
             listBoxLogs.FormattingEnabled = true;
             listBoxLogs.ItemHeight = 15;
-            listBoxLogs.Items.AddRange(new object[] { "Welcome to Authaas Docker Installer", "----------------------------------------" });
             listBoxLogs.Location = new Point(0, 0);
             listBoxLogs.Name = "listBoxLogs";
-            listBoxLogs.Size = new Size(800, 94);
+            listBoxLogs.Size = new Size(831, 349);
             listBoxLogs.TabIndex = 0;
+            // 
+            // progressBar1
+            // 
+            progressBar1.Dock = DockStyle.Bottom;
+            progressBar1.Location = new Point(0, 434);
+            progressBar1.Name = "progressBar1";
+            progressBar1.Size = new Size(831, 23);
+            progressBar1.TabIndex = 1;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(831, 457);
+            Controls.Add(progressBar1);
             Controls.Add(listBoxLogs);
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Form1";
+            Text = "AuthaaS Docker Installer";
+            Load += Form1_Load;
             ResumeLayout(false);
         }
 
         #endregion
 
         private ListBox listBoxLogs;
+        private ProgressBar progressBar1;
     }
 }
