@@ -61,6 +61,7 @@
             StartPosition = FormStartPosition.CenterScreen;
             Text = "AuthaaS Docker Installer";
             Load += Form1_Load;
+            Shown += Form1_Shown;
             ResumeLayout(false);
         }
 

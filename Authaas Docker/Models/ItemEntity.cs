@@ -1,4 +1,6 @@
-﻿namespace Authaas_Docker.Models;
+﻿using System.Management;
+
+namespace Authaas_Docker.Models;
 
 public class QueueItem<T>
 {
@@ -21,10 +23,13 @@ public class DownloadableItem
     public string DestinationPath { get; set; }
 
 
-    public bool IsInstalled()
+    public async Task<GenericResult> IsInstalled()
     {
-        // TODO: Implement logic to check if the item is installed
-        throw new NotImplementedException();
+        var result = await GetInstalledSoftware();
+
+        if (result.Success) return new GenericResult<bool>(true, true, "");
+
+        return new GenericResult<bool>(false, false, "");
     }
 
     /// <summary>
@@ -76,10 +81,54 @@ public class DownloadableItem
         return GenericResult.Ok();
     }
 
+    private async Task<GenericResult> GetInstalledSoftware()
+    {
+        var targetApplication = Name; // Replace with the name of your application
+
+        using (var searcher = new ManagementObjectSearcher("SELECT Name, Version FROM Win32_Product"))
+        {
+            foreach (ManagementObject obj in searcher.Get())
+            {
+                var name = obj["Name"]?.ToString();
+                var version = obj["Version"]?.ToString();
+
+                if (name != null &&
+                    name.Contains(targetApplication,
+                        StringComparison.OrdinalIgnoreCase))
+                    return new GenericResult<bool>(true, true, ""); // Application is installed
+            }
+        }
+
+        return new GenericResult<bool>(false, false, "");
+    }
 
     public async Task<GenericResult> Install()
     {
-        // TODO: Implement logic to install the item
-        throw new NotImplementedException();
+        try
+        {
+            return GenericResult.Ok(IsInstalled());
+        }
+        catch (Exception ex)
+        {
+            return GenericResult.Fail(ex.Message);
+        }
+    }
+
+    public async Task<GenericResult> CleanTemp()
+    {
+        try
+        {
+            if (File.Exists(DestinationPath))
+            {
+                File.Delete(DestinationPath);
+                return GenericResult.Ok($"Deleted File {DestinationPath}");
+            }
+
+            return GenericResult.Ok("No file found");
+        }
+        catch (Exception ex)
+        {
+            return GenericResult.Fail(ex.Message);
+        }
     }
 }

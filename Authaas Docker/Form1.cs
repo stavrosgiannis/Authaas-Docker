@@ -86,31 +86,46 @@ public partial class Form1 : Form
             DestinationPath = "notepad++.exe"
         };
 
+        var item2 = new DownloadableItem
+        {
+            Name = "VS Code",
+            Description = "The best IDE",
+            Url =
+                "https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-user",
+            DestinationPath = "VS Code.exe"
+        };
+
         _test.Enqueue(item);
+        _test.Enqueue(item2);
 
-        // Assuming _test is an instance of QueueProcessor<DownloadableItem>
-        await _test.ProcessAll(
-            async item =>
-            {
-                // Process the item using processFunction
-                listBoxLogs.Items.Add(DateForLog() + $"Downloading {item.Name}");
-                var result = await item.DownloadFile(progressBar1);
-
-                //await item.Install();
-            },
-            item =>
-            {
-                // Perform individualized processing for each item
-                Console.WriteLine($@"Processing item: {item.Name}");
-                // Add your specific logic here
-            });
+        await Task.Run(async () =>
+        {
+            foreach (var item in _test.GetQueueItems())
+                if (!item.Data.IsInstalled().Result.Success)
+                {
+                    // Process the item using processFunction
+                    listBoxLogs.Invoke(new Action(() =>
+                        listBoxLogs.Items.Add(DateForLog() + $"Downloading {item.Data.Name}")));
+                    var result = await item.Data.DownloadFile(progressBar1);
+                    listBoxLogs.Invoke(new Action(() =>
+                        listBoxLogs.Items.Add(DateForLog() + $"Installing {item.Data.Name}")));
+                    var result2 = await item.Data.Install();
+                    listBoxLogs.Invoke(new Action(() =>
+                        listBoxLogs.Items.Add(DateForLog() + $"Deleting installer {item.Data.Name}")));
+                    var result3 = await item.Data.CleanTemp();
+                }
+            // Add your specific logic here
+        });
     }
 
     private void Form1_Load(object sender, EventArgs e)
     {
         LogComputerInfo();
         listBoxLogs.Items.Add(DateForLog() + $"{typeof(Form1)} loaded");
+    }
 
+    private void Form1_Shown(object sender, EventArgs e)
+    {
         TestMethod();
     }
 }
