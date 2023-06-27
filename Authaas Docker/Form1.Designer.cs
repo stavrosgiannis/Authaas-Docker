@@ -28,12 +28,34 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Form1";
+            listBoxLogs = new ListBox();
+            SuspendLayout();
+            // 
+            // listBoxLogs
+            // 
+            listBoxLogs.Dock = DockStyle.Top;
+            listBoxLogs.FormattingEnabled = true;
+            listBoxLogs.ItemHeight = 15;
+            listBoxLogs.Items.AddRange(new object[] { "Welcome to Authaas Docker Installer", "----------------------------------------" });
+            listBoxLogs.Location = new Point(0, 0);
+            listBoxLogs.Name = "listBoxLogs";
+            listBoxLogs.Size = new Size(800, 94);
+            listBoxLogs.TabIndex = 0;
+            // 
+            // Form1
+            // 
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(800, 450);
+            Controls.Add(listBoxLogs);
+            Name = "Form1";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Form1";
+            ResumeLayout(false);
         }
 
         #endregion
+
+        private ListBox listBoxLogs;
     }
 }
