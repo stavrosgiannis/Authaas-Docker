@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Management;
 using Authaas_Docker.Models;
+using Timer = System.Threading.Timer;
 
 namespace Authaas_Docker;
 
@@ -108,7 +109,7 @@ public partial class Form1 : Form
                 var fileContents = await client.GetStringAsync(urlString);
 
                 string[] lines =
-                    fileContents.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                    fileContents.Split('\n');
 
                 foreach (var line in lines)
                 {
@@ -149,43 +150,6 @@ public partial class Form1 : Form
 
     public async void TestMethod()
     {
-        var item = new DownloadableItem
-        {
-            Name = "Notepad++",
-            Description = "The best Editor",
-            RunArguments = "/S",
-            Url =
-                "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.5.4/npp.8.5.4.Installer.x64.exe",
-            DestinationPath = "notepad++.exe",
-            InstallationDir = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)}\Notepad++"
-        };
-
-        var item2 = new DownloadableItem
-        {
-            Name = "VS Code",
-            Description = "The best IDE",
-            Url =
-                "https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-user",
-            DestinationPath = "VS Code.exe",
-            InstallationDir =
-                $@"{Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)}\Programs\Microsoft VS Code"
-        };
-
-        var item3 = new DownloadableItem
-        {
-            Name = "Git",
-            Description = "Git repository",
-            Url =
-                "https://github.com/git-for-windows/git/releases/download/v2.41.0.windows.1/Git-2.41.0-64-bit.exe",
-            DestinationPath = "git.exe",
-            InstallationDir = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)}\Git"
-        };
-
-        _test.Enqueue(item);
-        _test.Enqueue(item2);
-        _test.Enqueue(item3);
-
-
         listBoxLogs.Items.Add(DateForLog() + "Starting multi threading Task");
         await Task.Run(async () =>
         {
@@ -235,10 +199,10 @@ public partial class Form1 : Form
                             listBoxLogs.Items.Add(DateForLog() + $"Found {item.Data.Name} installation")));
                 }
             }
-
-
-            // Add your specific logic here
         });
+
+        listBoxLogs.Items.Add(DateForLog() + $"Done!");
+        listBoxLogs.Items.Add("-----------------------");
     }
 
     /// <summary>
@@ -254,16 +218,12 @@ public partial class Form1 : Form
     {
         var result = await GetDownloadableItemsFromUrl(
             "https://raw.githubusercontent.com/stavrosgiannis/Authaas-Docker/master/Authaas%20Docker/queueItems.txt?token=GHSAT0AAAAAACENZ2HKSORQNU3XN6BD3F3CZE4D7XQ");
-        Debug.WriteLine(result.ToString());
+
+        foreach (var entry in result) _test.Enqueue(entry);
     }
 
     private void button1_Click(object sender, EventArgs e)
     {
         TestMethod();
-    }
-
-    private void timer1_Tick(object sender, EventArgs e)
-    {
-        listBoxLogs.TopIndex = listBoxLogs.Items.Count - 1;
     }
 }
