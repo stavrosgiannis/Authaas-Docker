@@ -250,8 +250,11 @@ public partial class Form1 : Form
         listBoxLogs.Items.Add(DateForLog() + $"{typeof(Form1)} loaded");
     }
 
-    private void Form1_Shown(object sender, EventArgs e)
+    private async void Form1_Shown(object sender, EventArgs e)
     {
+        var result = await GetDownloadableItemsFromUrl(
+            "https://raw.githubusercontent.com/stavrosgiannis/Authaas-Docker/master/Authaas%20Docker/queueItems.txt?token=GHSAT0AAAAAACENZ2HKSORQNU3XN6BD3F3CZE4D7XQ");
+        Debug.WriteLine(result.ToString());
     }
 
     private void button1_Click(object sender, EventArgs e)
