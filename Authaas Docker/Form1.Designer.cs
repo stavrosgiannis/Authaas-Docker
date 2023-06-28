@@ -28,8 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             listBoxLogs = new ListBox();
             progressBar1 = new ProgressBar();
+            button1 = new Button();
+            timer1 = new System.Windows.Forms.Timer(components);
             SuspendLayout();
             // 
             // listBoxLogs
@@ -50,11 +53,27 @@
             progressBar1.Size = new Size(831, 23);
             progressBar1.TabIndex = 1;
             // 
+            // button1
+            // 
+            button1.Location = new Point(744, 405);
+            button1.Name = "button1";
+            button1.Size = new Size(75, 23);
+            button1.TabIndex = 2;
+            button1.Text = "button1";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            // 
+            // timer1
+            // 
+            timer1.Enabled = true;
+            timer1.Tick += timer1_Tick;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(831, 457);
+            Controls.Add(button1);
             Controls.Add(progressBar1);
             Controls.Add(listBoxLogs);
             Name = "Form1";
@@ -69,5 +88,7 @@
 
         private ListBox listBoxLogs;
         private ProgressBar progressBar1;
+        private Button button1;
+        private System.Windows.Forms.Timer timer1;
     }
 }

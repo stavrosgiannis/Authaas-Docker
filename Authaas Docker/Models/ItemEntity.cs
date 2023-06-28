@@ -1,4 +1,6 @@
-﻿using System.Management;
+﻿using System.Diagnostics;
+using System.Management;
+using System.Security.Cryptography;
 
 namespace Authaas_Docker.Models;
 
@@ -21,15 +23,15 @@ public class DownloadableItem
     public string RunArguments { get; set; }
     public string Url { get; set; }
     public string DestinationPath { get; set; }
+    public string InstallationDir { get; set; }
 
 
     public async Task<GenericResult> IsInstalled()
     {
-        var result = await GetInstalledSoftware();
+        if (Directory.Exists(InstallationDir))
+            return GenericResult.Ok();
 
-        if (result.Success) return new GenericResult<bool>(true, true, "");
-
-        return new GenericResult<bool>(false, false, "");
+        return GenericResult.Fail("isInstalled false");
     }
 
     /// <summary>
@@ -39,80 +41,90 @@ public class DownloadableItem
     /// <returns>GenericResult indicating the success of the operation.</returns>
     public async Task<GenericResult> DownloadFile(ProgressBar progressBar)
     {
-        using (var client = new HttpClient())
+        try
         {
-            using (var response = await client.GetAsync(new Uri(Url), HttpCompletionOption.ResponseHeadersRead))
-            using (var fileStream = new FileStream(DestinationPath, FileMode.Create, FileAccess.Write, FileShare.None))
-            using (var downloadStream = await response.Content.ReadAsStreamAsync())
+            using (var client = new HttpClient())
             {
-                long totalBytes;
-                if (response.Content.Headers.ContentLength.HasValue)
-                    totalBytes = response.Content.Headers.ContentLength.Value;
-                else
-                    totalBytes = -1; // Indicate that the length is unknown
-
-                var totalReadBytes = 0L;
-                var buffer = new byte[8192];
-                var isMoreToRead = true;
-
-                do
+                using (var response = await client.GetAsync(new Uri(Url), HttpCompletionOption.ResponseHeadersRead))
+                using (var fileStream =
+                       new FileStream(DestinationPath, FileMode.Create, FileAccess.Write, FileShare.None))
+                using (var downloadStream = await response.Content.ReadAsStreamAsync())
                 {
-                    var readBytes = await downloadStream.ReadAsync(buffer, 0, buffer.Length);
-                    if (readBytes == 0)
-                    {
-                        isMoreToRead = false;
-                    }
+                    long totalBytes;
+                    if (response.Content.Headers.ContentLength.HasValue)
+                        totalBytes = response.Content.Headers.ContentLength.Value;
                     else
+                        totalBytes = -1; // Indicate that the length is unknown
+
+                    var totalReadBytes = 0L;
+                    var buffer = new byte[8192];
+                    var isMoreToRead = true;
+
+                    do
                     {
-                        await fileStream.WriteAsync(buffer, 0, readBytes);
-
-                        totalReadBytes += readBytes;
-                        // Update progress bar
-                        if (totalBytes > 0)
+                        var readBytes = await downloadStream.ReadAsync(buffer, 0, buffer.Length);
+                        if (readBytes == 0)
                         {
-                            var progressPercentage = (int)(totalReadBytes * 100 / totalBytes);
-                            progressBar.Value = progressPercentage;
+                            isMoreToRead = false;
                         }
-                    }
-                } while (isMoreToRead);
+                        else
+                        {
+                            await fileStream.WriteAsync(buffer, 0, readBytes);
+
+                            totalReadBytes += readBytes;
+                            // Update progress bar
+                            if (totalBytes > 0)
+                            {
+                                var progressPercentage = (int)(totalReadBytes * 100 / totalBytes);
+                                progressBar.Invoke(new Action(() => progressBar.Value = progressPercentage));
+                            }
+                        }
+                    } while (isMoreToRead);
+                }
+
+                return GenericResult.Ok();
             }
         }
-
-        return GenericResult.Ok();
-    }
-
-    private async Task<GenericResult> GetInstalledSoftware()
-    {
-        var targetApplication = Name; // Replace with the name of your application
-
-        using (var searcher = new ManagementObjectSearcher("SELECT Name, Version FROM Win32_Product"))
+        catch (Exception ex)
         {
-            foreach (ManagementObject obj in searcher.Get())
-            {
-                var name = obj["Name"]?.ToString();
-                var version = obj["Version"]?.ToString();
-
-                if (name != null &&
-                    name.Contains(targetApplication,
-                        StringComparison.OrdinalIgnoreCase))
-                    return new GenericResult<bool>(true, true, ""); // Application is installed
-            }
+            Console.WriteLine(ex.Message);
+            return GenericResult.Fail(ex.Message);
         }
-
-        return new GenericResult<bool>(false, false, "");
     }
 
     public async Task<GenericResult> Install()
     {
         try
         {
-            return GenericResult.Ok(IsInstalled());
+            var installerPath = $@"{DestinationPath}"; // Replace with the actual path to your installer executable
+
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = installerPath,
+                WorkingDirectory = Application.StartupPath,
+                Arguments = RunArguments,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            var process = Process.Start(startInfo);
+
+            // Wait for the process to exit
+            await process.WaitForExitAsync();
+
+            // Check the exit code of the process to determine if the installation was successful
+            if (process.ExitCode == 0)
+                // Return success result
+                return GenericResult.Ok();
+            // Return failure result with an error message
+            return GenericResult.Fail("Installation failed with exit code: " + process.ExitCode);
         }
         catch (Exception ex)
         {
             return GenericResult.Fail(ex.Message);
         }
     }
+
 
     public async Task<GenericResult> CleanTemp()
     {
