@@ -1,8 +1,7 @@
-using System;
 using System.Diagnostics;
 using System.Management;
 using Authaas_Docker.Models;
-using Timer = System.Threading.Timer;
+using Authaas_Docker.Properties;
 
 namespace Authaas_Docker;
 
@@ -109,12 +108,12 @@ public partial class Form1 : Form
                 // Download the text file from the URL
                 var fileContents = await client.GetStringAsync(urlString);
 
-                string[] lines =
+                var lines =
                     fileContents.Split('\n');
 
                 foreach (var line in lines)
                 {
-                    string[] parts = line.Split(';');
+                    var parts = line.Split(';');
 
                     if (parts.Length >= 5)
                     {
@@ -160,7 +159,7 @@ public partial class Form1 : Form
             {
                 listBoxLogs.Invoke(
                     new Action(() =>
-                        listBoxLogs.Items.Add(DateForLog() + $"Virtualization: {resultVirt.IsFailure}")));
+                        listBoxLogs.Items.Add(DateForLog() + $"Virtualization: {resultVirt.Success}")));
                 return;
             }
 
@@ -187,7 +186,7 @@ public partial class Form1 : Form
                                              "rancher-desktop"))
                             await File.WriteAllBytesAsync(
                                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                                "rancher-desktop", Properties.Resources.settings);
+                                "rancher-desktop", Resources.settings);
 
                     var result2 = await item.Data.Install();
                     if (result2.IsFailure)
@@ -211,7 +210,7 @@ public partial class Form1 : Form
             }
         });
 
-        listBoxLogs.Items.Add(DateForLog() + $"Done!");
+        listBoxLogs.Items.Add(DateForLog() + "Done!");
         listBoxLogs.Items.Add("-----------------------");
     }
 
@@ -227,7 +226,7 @@ public partial class Form1 : Form
     private async void Form1_Shown(object sender, EventArgs e)
     {
         var result = await GetDownloadableItemsFromUrl(
-            "https://raw.githubusercontent.com/stavrosgiannis/Authaas-Docker/master/Authaas%20Docker/queueItems.txt?token=GHSAT0AAAAAACENZ2HLUSIRKB4JTBENSFFAZE5J3NA");
+            "https://raw.githubusercontent.com/stavrosgiannis/Authaas-Docker/master/Authaas%20Docker/queueItems.txt");
 
         foreach (var entry in result) _test.Enqueue(entry);
     }
