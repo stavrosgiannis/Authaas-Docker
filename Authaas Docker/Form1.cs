@@ -181,17 +181,23 @@ public partial class Form1 : Form
                             listBoxLogs.Items.Add(DateForLog() + $"Download exited with code: {result.Message}")));
                     listBoxLogs.Invoke(new Action(() =>
                         listBoxLogs.Items.Add(DateForLog() + $"Installing {item.Data.Name}")));
-                    if (item.Data.Name.Contains("Rancher"))
-                        if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                                             "rancher-desktop"))
-                            await File.WriteAllBytesAsync(
-                                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                                "rancher-desktop", Resources.settings);
+
 
                     var result2 = await item.Data.Install();
                     if (result2.IsFailure)
+                    {
                         listBoxLogs.Invoke(new Action(() =>
                             listBoxLogs.Items.Add(DateForLog() + $"{result2.Message}")));
+                    }
+                    else
+                    {
+                        if (item.Data.Name.Contains("Rancher"))
+                            if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                                                 "rancher-desktop"))
+                                await File.WriteAllBytesAsync(
+                                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                                    "rancher-desktop", Resources.settings);
+                    }
 
                     listBoxLogs.Invoke(new Action(() =>
                         listBoxLogs.Items.Add(DateForLog() + $"Deleting installer {item.Data.Name}")));
