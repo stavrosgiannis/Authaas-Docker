@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Management;
-using System.Security.Cryptography;
 
 namespace Authaas_Docker.Models;
 
@@ -25,7 +23,12 @@ public class DownloadableItem
     public string DestinationPath { get; set; }
     public string InstallationDir { get; set; }
 
-
+    /// <summary>
+    ///     Checks if the application is installed in the specified directory.
+    /// </summary>
+    /// <returns>
+    ///     Returns a GenericResult indicating if the application is installed or not.
+    /// </returns>
     public async Task<GenericResult> IsInstalled()
     {
         if (Directory.Exists(InstallationDir))
@@ -92,6 +95,12 @@ public class DownloadableItem
         }
     }
 
+    /// <summary>
+    /// Installs the application using the specified installer path and arguments.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="GenericResult"/> indicating the success or failure of the installation.
+    /// </returns>
     public async Task<GenericResult> Install()
     {
         try
@@ -103,7 +112,7 @@ public class DownloadableItem
                 FileName = installerPath,
                 WorkingDirectory = Application.StartupPath,
                 Arguments = RunArguments,
-                UseShellExecute = false,
+                UseShellExecute = true,
                 CreateNoWindow = true
             };
 
@@ -125,7 +134,12 @@ public class DownloadableItem
         }
     }
 
-
+    /// <summary>
+    /// Deletes a file from the specified destination path.
+    /// </summary>
+    /// <returns>
+    /// Returns a GenericResult indicating the success or failure of the operation.
+    /// </returns>
     public async Task<GenericResult> CleanTemp()
     {
         try
