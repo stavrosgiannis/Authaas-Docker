@@ -1,8 +1,7 @@
-using System;
 using System.Diagnostics;
 using System.Management;
 using Authaas_Docker.Models;
-using Timer = System.Threading.Timer;
+using Authaas_Docker.Properties;
 
 namespace Authaas_Docker;
 
@@ -109,12 +108,12 @@ public partial class Form1 : Form
                 // Download the text file from the URL
                 var fileContents = await client.GetStringAsync(urlString);
 
-                string[] lines =
+                var lines =
                     fileContents.Split('\n');
 
                 foreach (var line in lines)
                 {
-                    string[] parts = line.Split(';');
+                    var parts = line.Split(';');
 
                     if (parts.Length >= 5)
                     {
@@ -160,7 +159,7 @@ public partial class Form1 : Form
             {
                 listBoxLogs.Invoke(
                     new Action(() =>
-                        listBoxLogs.Items.Add(DateForLog() + $"Virtualization: {resultVirt.IsFailure}")));
+                        listBoxLogs.Items.Add(DateForLog() + $"Virtualization: {resultVirt.Success}")));
                 return;
             }
 
@@ -182,29 +181,23 @@ public partial class Form1 : Form
 
                     listBoxLogs.Invoke(new Action(() =>
                         listBoxLogs.Items.Add(DateForLog() + $"Installing {item.Data.Name}")));
+
+
                     var result2 = await item.Data.Install();
                     if (result2.IsFailure)
+                    {
                         listBoxLogs.Invoke(new Action(() =>
                             listBoxLogs.Items.Add(DateForLog() + $"{result2.Message}")));
-                    if (result2.Success)
+                    }
+                    else
+                    {
                         if (item.Data.Name.Contains("Rancher"))
-                        {
-                            Process.Start(
-                                $@"{Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)}\Rancher Desktop\Rancher Desktop.exe");
-                            foreach (var myProc in Process.GetProcesses())
-                                if (myProc.ProcessName == "Rancher Desktop")
-                                    myProc.Kill();
-
-                            listBoxLogs.Invoke(new Action(() =>
-                                listBoxLogs.Items.Add(DateForLog() +
-                                                      $"Copying {item.Data.Name} settings file -> {Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}")));
                             if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
                                                  "rancher-desktop"))
                                 await File.WriteAllBytesAsync(
                                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                                    "rancher-desktop", Properties.Resources.settings);
-                        }
-
+                                    "rancher-desktop", Resources.settings);
+                    }
 
                     listBoxLogs.Invoke(new Action(() =>
                         listBoxLogs.Items.Add(DateForLog() + $"Deleting installer {item.Data.Name}")));
@@ -223,7 +216,7 @@ public partial class Form1 : Form
             }
         });
 
-        listBoxLogs.Items.Add(DateForLog() + $"Done!");
+        listBoxLogs.Items.Add(DateForLog() + "Done!");
         listBoxLogs.Items.Add("-----------------------");
     }
 
@@ -239,7 +232,7 @@ public partial class Form1 : Form
     private async void Form1_Shown(object sender, EventArgs e)
     {
         var result = await GetDownloadableItemsFromUrl(
-            "https://raw.githubusercontent.com/stavrosgiannis/Authaas-Docker/master/Authaas%20Docker/queueItems.txt?token=GHSAT0AAAAAACENZ2HLYZ24KP7FGGZDIOFKZE5MEGA");
+            "https://raw.githubusercontent.com/stavrosgiannis/Authaas-Docker/master/Authaas%20Docker/queueItems.txt");
 
         foreach (var entry in result) _test.Enqueue(entry);
     }
