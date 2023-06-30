@@ -193,10 +193,21 @@ public partial class Form1 : Form
                     {
                         if (item.Data.Name.Contains("Rancher"))
                             if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                                                 "rancher-desktop"))
+                                                 @"\rancher-desktop"))
+                            {
                                 await File.WriteAllBytesAsync(
                                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                                    "rancher-desktop", Resources.settings);
+                                    @"\rancher-desktop\settings.json", Resources.settings);
+                            }
+                            else
+                            {
+                                Directory.CreateDirectory(
+                                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                                    @"\rancher-desktop");
+                                await File.WriteAllBytesAsync(
+                                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                                    @"\rancher-desktop\settings.json", Resources.settings);
+                            }
                     }
 
                     listBoxLogs.Invoke(new Action(() =>
