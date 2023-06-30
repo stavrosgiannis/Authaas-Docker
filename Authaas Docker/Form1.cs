@@ -175,24 +175,36 @@ public partial class Form1 : Form
                     // Process the item using processFunction
                     listBoxLogs.Invoke(new Action(() =>
                         listBoxLogs.Items.Add(DateForLog() + $"Downloading {item.Data.Name}")));
-
                     var result = await item.Data.DownloadFile(progressBar1);
                     if (result.IsFailure)
                         listBoxLogs.Invoke(new Action(() =>
                             listBoxLogs.Items.Add(DateForLog() + $"Download exited with code: {result.Message}")));
+
                     listBoxLogs.Invoke(new Action(() =>
                         listBoxLogs.Items.Add(DateForLog() + $"Installing {item.Data.Name}")));
-                    if (item.Data.Name.Contains("Rancher"))
-                        if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                                             "rancher-desktop"))
-                            await File.WriteAllBytesAsync(
-                                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                                "rancher-desktop", Properties.Resources.settings);
-
                     var result2 = await item.Data.Install();
                     if (result2.IsFailure)
                         listBoxLogs.Invoke(new Action(() =>
                             listBoxLogs.Items.Add(DateForLog() + $"{result2.Message}")));
+                    if (result2.Success)
+                        if (item.Data.Name.Contains("Rancher"))
+                        {
+                            Process.Start(
+                                $@"{Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)}\Rancher Desktop\Rancher Desktop.exe");
+                            foreach (var myProc in Process.GetProcesses())
+                                if (myProc.ProcessName == "Rancher Desktop")
+                                    myProc.Kill();
+
+                            listBoxLogs.Invoke(new Action(() =>
+                                listBoxLogs.Items.Add(DateForLog() +
+                                                      $"Copying {item.Data.Name} settings file -> {Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}")));
+                            if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                                                 "rancher-desktop"))
+                                await File.WriteAllBytesAsync(
+                                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                                    "rancher-desktop", Properties.Resources.settings);
+                        }
+
 
                     listBoxLogs.Invoke(new Action(() =>
                         listBoxLogs.Items.Add(DateForLog() + $"Deleting installer {item.Data.Name}")));
@@ -227,7 +239,7 @@ public partial class Form1 : Form
     private async void Form1_Shown(object sender, EventArgs e)
     {
         var result = await GetDownloadableItemsFromUrl(
-            "https://raw.githubusercontent.com/stavrosgiannis/Authaas-Docker/master/Authaas%20Docker/queueItems.txt?token=GHSAT0AAAAAACENZ2HLUSIRKB4JTBENSFFAZE5J3NA");
+            "https://raw.githubusercontent.com/stavrosgiannis/Authaas-Docker/master/Authaas%20Docker/queueItems.txt?token=GHSAT0AAAAAACENZ2HLYZ24KP7FGGZDIOFKZE5MEGA");
 
         foreach (var entry in result) _test.Enqueue(entry);
     }
