@@ -179,11 +179,11 @@ public partial class Form1 : Form
                     // Process the item using processFunction
                     listBoxLogs.Invoke(new Action(() =>
                         listBoxLogs.Items.Add(DateForLog() + $"Downloading {item.Data.Name}")));
-
                     var result = await item.Data.DownloadFile(progressBar1);
                     if (result.IsFailure)
                         listBoxLogs.Invoke(new Action(() =>
                             listBoxLogs.Items.Add(DateForLog() + $"Download exited with code: {result.Message}")));
+
                     listBoxLogs.Invoke(new Action(() =>
                         listBoxLogs.Items.Add(DateForLog() + $"Installing {item.Data.Name}")));
 
@@ -192,14 +192,27 @@ public partial class Form1 : Form
                     if (result2.IsFailure)
                         listBoxLogs.Invoke(new Action(() =>
                             listBoxLogs.Items.Add(DateForLog() + $"{result2.Message}")));
-
-                    if (item.Data.Name.Contains("Rancher"))
-                        if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                                             "rancher-desktop"))
-                            await File.WriteAllBytesAsync(
-                                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                                "rancher-desktop", Resources.settings);
-
+                    }
+                    else
+                    {
+                        if (item.Data.Name.Contains("Rancher"))
+                            if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                                                 @"\rancher-desktop"))
+                            {
+                                await File.WriteAllBytesAsync(
+                                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                                    @"\rancher-desktop\settings.json", Resources.settings);
+                            }
+                            else
+                            {
+                                Directory.CreateDirectory(
+                                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                                    @"\rancher-desktop");
+                                await File.WriteAllBytesAsync(
+                                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                                    @"\rancher-desktop\settings.json", Resources.settings);
+                            }
+                    }
 
                     listBoxLogs.Invoke(new Action(() =>
                         listBoxLogs.Items.Add(DateForLog() + $"Deleting installer {item.Data.Name}")));
