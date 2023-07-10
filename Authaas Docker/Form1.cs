@@ -97,6 +97,11 @@ public partial class Form1 : Form
         return GenericResult.Fail("Virtualization not enabled"); // Virtualization is disabled or an error occurred
     }
 
+    /// <summary>
+    ///     Retrieves a list of DownloadableItems from a given URL.
+    /// </summary>
+    /// <param name="urlString">The URL to retrieve the DownloadableItems from.</param>
+    /// <returns>A list of DownloadableItems.</returns>
     public async Task<List<DownloadableItem>> GetDownloadableItemsFromUrl(string urlString)
     {
         List<DownloadableItem> items = new();
@@ -185,19 +190,16 @@ public partial class Form1 : Form
 
                     var result2 = await item.Data.Install();
                     if (result2.IsFailure)
-                    {
                         listBoxLogs.Invoke(new Action(() =>
                             listBoxLogs.Items.Add(DateForLog() + $"{result2.Message}")));
-                    }
-                    else
-                    {
-                        if (item.Data.Name.Contains("Rancher"))
-                            if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                                                 "rancher-desktop"))
-                                await File.WriteAllBytesAsync(
-                                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                                    "rancher-desktop", Resources.settings);
-                    }
+
+                    if (item.Data.Name.Contains("Rancher"))
+                        if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                                             "rancher-desktop"))
+                            await File.WriteAllBytesAsync(
+                                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                                "rancher-desktop", Resources.settings);
+
 
                     listBoxLogs.Invoke(new Action(() =>
                         listBoxLogs.Items.Add(DateForLog() + $"Deleting installer {item.Data.Name}")));
@@ -212,6 +214,13 @@ public partial class Form1 : Form
                     listBoxLogs.Invoke(
                         new Action(() =>
                             listBoxLogs.Items.Add(DateForLog() + $"Found {item.Data.Name} installation")));
+
+                    if (item.Data.Name.Contains("Rancher"))
+                        if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                                             "rancher-desktop"))
+                            await File.WriteAllBytesAsync(
+                                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                                "rancher-desktop", Resources.settings);
                 }
             }
         });
