@@ -96,10 +96,10 @@ public class DownloadableItem
     }
 
     /// <summary>
-    /// Installs the application using the specified installer path and arguments.
+    ///     Installs the application using the specified installer path and arguments.
     /// </summary>
     /// <returns>
-    /// A <see cref="GenericResult"/> indicating the success or failure of the installation.
+    ///     A <see cref="GenericResult" /> indicating the success or failure of the installation.
     /// </returns>
     public async Task<GenericResult> Install()
     {
@@ -135,10 +135,10 @@ public class DownloadableItem
     }
 
     /// <summary>
-    /// Deletes a file from the specified destination path.
+    ///     Deletes a file from the specified destination path.
     /// </summary>
     /// <returns>
-    /// Returns a GenericResult indicating the success or failure of the operation.
+    ///     Returns a GenericResult indicating the success or failure of the operation.
     /// </returns>
     public async Task<GenericResult> CleanTemp()
     {

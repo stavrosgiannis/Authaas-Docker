@@ -162,71 +162,72 @@ public partial class Form1 : Form
 
             if (resultVirt.IsFailure)
             {
-                listBoxLogs.Invoke(
-                    new Action(() =>
-                        listBoxLogs.Items.Add(DateForLog() + $"Virtualization: {resultVirt.Success}")));
+                listBoxLogs.BeginInvoke(
+                    () =>
+                        listBoxLogs.Items.Add(DateForLog() + $"Virtualization: {resultVirt.Success}"));
                 return;
             }
 
 
             foreach (var item in _test.GetQueueItems())
             {
-                listBoxLogs.Invoke(
-                    new Action(() =>
-                        listBoxLogs.Items.Add(DateForLog() + $"Checking if {item.Data.Name} is installed")));
+                listBoxLogs.BeginInvoke(
+                    () =>
+                        listBoxLogs.Items.Add(DateForLog() + $"Checking if {item.Data.Name} is installed"));
                 if (!item.Data.IsInstalled().Result.Success)
                 {
                     // Process the item using processFunction
-                    listBoxLogs.Invoke(new Action(() =>
-                        listBoxLogs.Items.Add(DateForLog() + $"Downloading {item.Data.Name}")));
+                    listBoxLogs.BeginInvoke(() =>
+                        listBoxLogs.Items.Add(DateForLog() + $"Downloading {item.Data.Name}"));
                     var result = await item.Data.DownloadFile(progressBar1);
                     if (result.IsFailure)
-                        listBoxLogs.Invoke(new Action(() =>
-                            listBoxLogs.Items.Add(DateForLog() + $"Download exited with code: {result.Message}")));
+                        listBoxLogs.BeginInvoke(() =>
+                            listBoxLogs.Items.Add(DateForLog() + $"Download exited with code: {result.Message}"));
 
-                    listBoxLogs.Invoke(new Action(() =>
-                        listBoxLogs.Items.Add(DateForLog() + $"Installing {item.Data.Name}")));
+                    listBoxLogs.BeginInvoke(() =>
+                        listBoxLogs.Items.Add(DateForLog() + $"Installing {item.Data.Name}"));
 
 
                     var result2 = await item.Data.Install();
                     if (result2.IsFailure)
-                        listBoxLogs.Invoke(new Action(() =>
-                            listBoxLogs.Items.Add(DateForLog() + $"{result2.Message}")));
-                    }
-                    else
-                    {
-                        if (item.Data.Name.Contains("Rancher"))
-                            if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                                                 @"\rancher-desktop"))
-                            {
-                                await File.WriteAllBytesAsync(
-                                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                                    @"\rancher-desktop\settings.json", Resources.settings);
-                            }
-                            else
-                            {
-                                Directory.CreateDirectory(
-                                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                                    @"\rancher-desktop");
-                                await File.WriteAllBytesAsync(
-                                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                                    @"\rancher-desktop\settings.json", Resources.settings);
-                            }
-                    }
-
-                    listBoxLogs.Invoke(new Action(() =>
-                        listBoxLogs.Items.Add(DateForLog() + $"Deleting installer {item.Data.Name}")));
-                    var result3 = await item.Data.CleanTemp();
-                    if (result3.IsFailure)
-                        listBoxLogs.Invoke(new Action(() =>
-                            listBoxLogs.Items.Add(DateForLog() +
-                                                  $"Deleting installer exited with code: {result3.Message}")));
+                        listBoxLogs.BeginInvoke(() =>
+                            listBoxLogs.Items.Add(DateForLog() + $"{result2.Message}"));
                 }
                 else
                 {
-                    listBoxLogs.Invoke(
-                        new Action(() =>
-                            listBoxLogs.Items.Add(DateForLog() + $"Found {item.Data.Name} installation")));
+                    if (item.Data.Name.Contains("Rancher"))
+                        if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                                             @"\rancher-desktop"))
+                        {
+                            await File.WriteAllBytesAsync(
+                                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                                @"\rancher-desktop\settings.json", Resources.settings);
+                        }
+                        else
+                        {
+                            Directory.CreateDirectory(
+                                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                                @"\rancher-desktop");
+                            await File.WriteAllBytesAsync(
+                                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                                @"\rancher-desktop\settings.json", Resources.settings);
+                        }
+                }
+
+                listBoxLogs.BeginInvoke(() =>
+                    listBoxLogs.Items.Add(DateForLog() + $"Deleting installer {item.Data.Name}"));
+                var result3 = await item.Data.CleanTemp();
+                if (result3.IsFailure)
+                {
+                    listBoxLogs.BeginInvoke(() =>
+                        listBoxLogs.Items.Add(DateForLog() +
+                                              $"Deleting installer exited with code: {result3.Message}"));
+                }
+                else
+                {
+                    listBoxLogs.BeginInvoke(
+                        () =>
+                            listBoxLogs.Items.Add(DateForLog() + $"Found {item.Data.Name} installation"));
 
                     if (item.Data.Name.Contains("Rancher"))
                         if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
@@ -236,10 +237,11 @@ public partial class Form1 : Form
                                 "rancher-desktop", Resources.settings);
                 }
             }
-        });
 
-        listBoxLogs.Items.Add(DateForLog() + "Done!");
-        listBoxLogs.Items.Add("-----------------------");
+
+            listBoxLogs.Items.Add(DateForLog() + "Done!");
+            listBoxLogs.Items.Add("-----------------------");
+        });
     }
 
     /// <summary>
