@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Management;
+using System.Runtime.InteropServices;
 using Authaas_Docker.Models;
 using Authaas_Docker.Properties;
 
@@ -158,13 +159,13 @@ public partial class Form1 : Form
         listBoxLogs.Items.Add(DateForLog() + "Starting multi threading Task");
         await Task.Run(async () =>
         {
-            var resultVirt = await IsVirtualizationEnabled();
+            var resultVirt = IsVirtualizationEnabled();
 
-            if (resultVirt.IsFailure)
+            if (!resultVirt.Result.Success)
             {
                 listBoxLogs.BeginInvoke(
                     () =>
-                        listBoxLogs.Items.Add(DateForLog() + $"Virtualization: {resultVirt.Success}"));
+                        listBoxLogs.Items.Add(DateForLog() + $"Virtualization: {resultVirt}"));
                 return;
             }
 
@@ -174,7 +175,8 @@ public partial class Form1 : Form
                 listBoxLogs.BeginInvoke(
                     () =>
                         listBoxLogs.Items.Add(DateForLog() + $"Checking if {item.Data.Name} is installed"));
-                if (!item.Data.IsInstalled().Result.Success)
+                var resultInstalled = await item.Data.IsInstalled();
+                if (resultInstalled.IsFailure)
                 {
                     // Process the item using processFunction
                     listBoxLogs.BeginInvoke(() =>
@@ -186,8 +188,6 @@ public partial class Form1 : Form
 
                     listBoxLogs.BeginInvoke(() =>
                         listBoxLogs.Items.Add(DateForLog() + $"Installing {item.Data.Name}"));
-
-
                     var result2 = await item.Data.Install();
                     if (result2.IsFailure)
                         listBoxLogs.BeginInvoke(() =>
