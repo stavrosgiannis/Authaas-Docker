@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Management;
-using System.Runtime.InteropServices;
 using Authaas_Docker.Models;
 using Authaas_Docker.Properties;
 
@@ -194,7 +193,7 @@ public partial class Form1 : Form
         }
 
         listBoxLogs.BeginInvoke(() =>
-            listBoxLogs.Items.Add(DateForLog() + $"Deleting installer {item.Data.Name}"));
+            listBoxLogs.Items.Add(DateForLog() + $"Cleaning temp data of {item.Data.Name}"));
         var result3 = await item.Data.CleanTemp();
         if (result3.IsFailure)
         {
@@ -204,16 +203,18 @@ public partial class Form1 : Form
         }
         else
         {
-            listBoxLogs.BeginInvoke(
-                () =>
-                    listBoxLogs.Items.Add(DateForLog() + $"Found {item.Data.Name} installation"));
-
             if (item.Data.Name.Contains("Rancher"))
+
                 if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                                     "rancher-desktop"))
+                                     @"\rancher-desktop"))
+                {
+                    listBoxLogs.BeginInvoke(
+                        () =>
+                            listBoxLogs.Items.Add(DateForLog() + $"Copied {item.Data.Name} configuration settings"));
                     await File.WriteAllBytesAsync(
                         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
                         "rancher-desktop", Resources.settings);
+                }
         }
     }
 
@@ -221,21 +222,42 @@ public partial class Form1 : Form
     {
         listBoxLogs.Items.Add(DateForLog() + "Starting multi threading Task");
 
-        var resultVirt = await IsVirtualizationEnabled();
-        if (resultVirt.IsFailure)
-        {
-            listBoxLogs.Items.Add(DateForLog() + $"Virtualization: {resultVirt.Success}");
-            return;
-        }
-
         // Get all queue items and start processing them in parallel
         var queueItems = _test.GetQueueItems();
-        var tasks = queueItems.Select(item => ProcessQueueItemAsync(item));
-        await Task.WhenAll(tasks);
+        var tasks = queueItems.Select(item => ProcessQueueItemAsync(item)).ToArray(); // Note the use of ToArray here
 
-        listBoxLogs.Items.Add(DateForLog() + "Done!");
-        listBoxLogs.Items.Add("-----------------------");
+        try
+        {
+            await Task.WhenAll(tasks);
+        }
+        catch
+        {
+            // At least one of the tasks threw an exception.
+            // Task.WhenAll throws an exception as soon as any task fails.
+        }
+
+        foreach (var task in tasks)
+            if (task.IsCompletedSuccessfully)
+            {
+                // Task completed successfully. You can access task.Result here if the task has a result
+            }
+            else if (task.IsFaulted)
+            {
+                // Task threw an exception. The exception can be accessed with task.Exception
+            }
+            else if (task.IsCanceled)
+            {
+                // Task was canceled. This is typically signaled by a CancellationToken.
+            }
+
+        // Check if all tasks completed successfully
+        if (tasks.All(task => task.IsCompletedSuccessfully))
+        {
+            //listBoxLogs.Items.Add(DateForLog() + "Done!");
+            //listBoxLogs.Items.Add("-----------------------");
+        }
     }
+
 
     /// <summary>
     ///     This method is used to log computer information and add a log item to the list box when the form is loaded.
