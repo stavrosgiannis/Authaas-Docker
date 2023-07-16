@@ -153,95 +153,87 @@ public partial class Form1 : Form
         return items;
     }
 
-    public async void TestMethod()
+    private async Task ProcessQueueItemAsync(QueueItem<DownloadableItem> item)
+    {
+        listBoxLogs.Items.Add(DateForLog() + $"Checking if {item.Data.Name} is installed");
+
+        if (!item.Data.IsInstalled().Result.Success)
+        {
+            // Process the item using processFunction
+            listBoxLogs.Items.Add(DateForLog() + $"Downloading {item.Data.Name}");
+            var result = await item.Data.DownloadFile(progressBar1);
+            if (result.IsFailure)
+                listBoxLogs.Items.Add(DateForLog() + $"Download exited with code: {result.Message}");
+
+            listBoxLogs.Items.Add(DateForLog() + $"Installing {item.Data.Name}");
+
+            var result2 = await item.Data.Install();
+            if (result2.IsFailure)
+                listBoxLogs.Items.Add(DateForLog() + $"{result2.Message}");
+        }
+        else
+        {
+            if (item.Data.Name.Contains("Rancher"))
+                if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                                     @"\rancher-desktop"))
+                {
+                    await File.WriteAllBytesAsync(
+                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                        @"\rancher-desktop\settings.json", Resources.settings);
+                }
+                else
+                {
+                    Directory.CreateDirectory(
+                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                        @"\rancher-desktop");
+                    await File.WriteAllBytesAsync(
+                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                        @"\rancher-desktop\settings.json", Resources.settings);
+                }
+        }
+
+        listBoxLogs.BeginInvoke(() =>
+            listBoxLogs.Items.Add(DateForLog() + $"Deleting installer {item.Data.Name}"));
+        var result3 = await item.Data.CleanTemp();
+        if (result3.IsFailure)
+        {
+            listBoxLogs.BeginInvoke(() =>
+                listBoxLogs.Items.Add(DateForLog() +
+                                      $"Deleting installer exited with code: {result3.Message}"));
+        }
+        else
+        {
+            listBoxLogs.BeginInvoke(
+                () =>
+                    listBoxLogs.Items.Add(DateForLog() + $"Found {item.Data.Name} installation"));
+
+            if (item.Data.Name.Contains("Rancher"))
+                if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                                     "rancher-desktop"))
+                    await File.WriteAllBytesAsync(
+                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                        "rancher-desktop", Resources.settings);
+        }
+    }
+
+    public async void TestMethodAsync() // Renamed to follow async naming conventions
     {
         listBoxLogs.Items.Add(DateForLog() + "Starting multi threading Task");
-        await Task.Run(async () =>
+
+        var resultVirt = await IsVirtualizationEnabled();
+        if (resultVirt.IsFailure)
         {
-            var resultVirt = await IsVirtualizationEnabled();
+            listBoxLogs.Items.Add(DateForLog() + $"Virtualization: {resultVirt.Success}");
+            return;
+        }
 
-            if (resultVirt.IsFailure)
-            {
-                listBoxLogs.BeginInvoke(
-                    () =>
-                        listBoxLogs.Items.Add(DateForLog() + $"Virtualization: {resultVirt.Success}"));
-                return;
-            }
+        // Get all queue items and start processing them in parallel
+        var queueItems = _test.GetQueueItems();
+        var tasks = queueItems.Select(item => ProcessQueueItemAsync(item));
+        await Task.WhenAll(tasks);
 
-
-            foreach (var item in _test.GetQueueItems())
-            {
-                listBoxLogs.BeginInvoke(
-                    () =>
-                        listBoxLogs.Items.Add(DateForLog() + $"Checking if {item.Data.Name} is installed"));
-                if (!item.Data.IsInstalled().Result.Success)
-                {
-                    // Process the item using processFunction
-                    listBoxLogs.BeginInvoke(() =>
-                        listBoxLogs.Items.Add(DateForLog() + $"Downloading {item.Data.Name}"));
-                    var result = await item.Data.DownloadFile(progressBar1);
-                    if (result.IsFailure)
-                        listBoxLogs.BeginInvoke(() =>
-                            listBoxLogs.Items.Add(DateForLog() + $"Download exited with code: {result.Message}"));
-
-                    listBoxLogs.BeginInvoke(() =>
-                        listBoxLogs.Items.Add(DateForLog() + $"Installing {item.Data.Name}"));
-
-
-                    var result2 = await item.Data.Install();
-                    if (result2.IsFailure)
-                        listBoxLogs.BeginInvoke(() =>
-                            listBoxLogs.Items.Add(DateForLog() + $"{result2.Message}"));
-                }
-                else
-                {
-                    if (item.Data.Name.Contains("Rancher"))
-                        if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                                             @"\rancher-desktop"))
-                        {
-                            await File.WriteAllBytesAsync(
-                                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                                @"\rancher-desktop\settings.json", Resources.settings);
-                        }
-                        else
-                        {
-                            Directory.CreateDirectory(
-                                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                                @"\rancher-desktop");
-                            await File.WriteAllBytesAsync(
-                                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                                @"\rancher-desktop\settings.json", Resources.settings);
-                        }
-                }
-
-                listBoxLogs.BeginInvoke(() =>
-                    listBoxLogs.Items.Add(DateForLog() + $"Deleting installer {item.Data.Name}"));
-                var result3 = await item.Data.CleanTemp();
-                if (result3.IsFailure)
-                {
-                    listBoxLogs.BeginInvoke(() =>
-                        listBoxLogs.Items.Add(DateForLog() +
-                                              $"Deleting installer exited with code: {result3.Message}"));
-                }
-                else
-                {
-                    listBoxLogs.BeginInvoke(
-                        () =>
-                            listBoxLogs.Items.Add(DateForLog() + $"Found {item.Data.Name} installation"));
-
-                    if (item.Data.Name.Contains("Rancher"))
-                        if (Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                                             "rancher-desktop"))
-                            await File.WriteAllBytesAsync(
-                                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
-                                "rancher-desktop", Resources.settings);
-                }
-            }
-
-
-            listBoxLogs.Items.Add(DateForLog() + "Done!");
-            listBoxLogs.Items.Add("-----------------------");
-        });
+        listBoxLogs.Items.Add(DateForLog() + "Done!");
+        listBoxLogs.Items.Add("-----------------------");
     }
 
     /// <summary>
@@ -263,6 +255,6 @@ public partial class Form1 : Form
 
     private void button1_Click(object sender, EventArgs e)
     {
-        TestMethod();
+        TestMethodAsync();
     }
 }
