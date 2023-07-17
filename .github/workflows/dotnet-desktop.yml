@@ -30,7 +30,7 @@ jobs:
       with:
         files: ./publish/
         recursive: true
-        dest: ./myapp.zip
+        dest: ./authaas-docker.zip
 
     - name: Create Release
       id: create_release
@@ -50,6 +50,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} 
-        asset_path: ./myapp.zip
-        asset_name: myapp.zip
+        asset_path: ./authaas-docker.zip
+        asset_name: authaas-docker.zip
         asset_content_type: application/zip
