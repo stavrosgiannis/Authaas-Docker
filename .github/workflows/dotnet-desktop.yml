@@ -1,9 +1,6 @@
 name: Build, Zip and Release
 
-on:
-  push:
-    tags:
-      - 'v*'
+on: push
 
 jobs:
   build:
@@ -31,7 +28,7 @@ jobs:
       with:
         files: ./publish/
         recursive: true
-        destination: ./myapp.zip
+        dest: ./myapp.zip
 
     - name: Create Release
       id: create_release
@@ -54,4 +51,3 @@ jobs:
         asset_path: ./myapp.zip
         asset_name: myapp.zip
         asset_content_type: application/zip
-        
