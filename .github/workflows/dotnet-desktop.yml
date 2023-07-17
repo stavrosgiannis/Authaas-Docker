@@ -30,7 +30,7 @@ jobs:
       with:
         files: ./publish/
         recursive: true
-        destination: ./myapp.zip
+        dest: ./myapp.zip
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2
