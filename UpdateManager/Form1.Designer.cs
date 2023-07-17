@@ -37,7 +37,7 @@
             progressBar1.Dock = DockStyle.Bottom;
             progressBar1.Location = new Point(0, 49);
             progressBar1.Name = "progressBar1";
-            progressBar1.Size = new Size(231, 23);
+            progressBar1.Size = new Size(752, 23);
             progressBar1.Style = ProgressBarStyle.Continuous;
             progressBar1.TabIndex = 0;
             // 
@@ -48,14 +48,14 @@
             listBox1.ItemHeight = 15;
             listBox1.Location = new Point(0, 0);
             listBox1.Name = "listBox1";
-            listBox1.Size = new Size(231, 49);
+            listBox1.Size = new Size(752, 49);
             listBox1.TabIndex = 1;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(231, 72);
+            ClientSize = new Size(752, 72);
             Controls.Add(listBox1);
             Controls.Add(progressBar1);
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
