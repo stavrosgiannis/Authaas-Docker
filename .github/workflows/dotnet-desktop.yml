@@ -32,14 +32,19 @@ jobs:
         recursive: true
         dest: ./authaas-docker.zip
 
+    - name: Calculate SHA1
+      id: calc_sha
+      run: |
+        echo "::set-output name=SHA1::$(openssl dgst -sha1 ./authaas-docker.zip | awk '{print $2}')"
+
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: commit-${{ github.sha }}
-        release_name: Release commit-${{ github.sha }}
+        tag_name: release-${{ steps.calc_sha.outputs.SHA1 }}
+        release_name: Release ${{ steps.calc_sha.outputs.SHA1 }}
         draft: false
         prerelease: false
 
