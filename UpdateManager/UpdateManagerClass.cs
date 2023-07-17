@@ -1,9 +1,11 @@
 ﻿using System.Diagnostics;
-using System.Net;
 using System.Reflection;
+
+namespace UpdateManager;
 
 public class UpdateManagerClass
 {
+    private static readonly HttpClient Client = new();
     private readonly string _downloadUrl;
     private readonly string _versionCheckUrl;
 
@@ -24,37 +26,63 @@ public class UpdateManagerClass
     }
 
 
-    private async Task<string> GetLatestVersionFromUrlAsync(string url)
+    private static async Task<string> GetLatestVersionFromUrlAsync(string url)
     {
-        using (var webClient = new WebClient())
+        try
         {
-            var versionString = await webClient.DownloadStringTaskAsync(url);
-            return versionString.Trim();
+            var latestVersion = await Client.GetStringAsync(url);
+            return latestVersion;
         }
+        catch (Exception ex)
+        {
+            // Handle exceptions as necessary
+            Debug.WriteLine($@"An error occurred: {ex.Message}");
+        }
+
+        return "1.0.0";
     }
 
-    public async Task<Version> GetLatestVersionFromExeUrlAsync(string url, string localFilePath)
+    private static async Task<Version> GetLatestVersionFromExeUrlAsync(string url, string localFilePath)
     {
-        using (var webClient = new WebClient())
+        try
         {
-            await webClient.DownloadFileTaskAsync(url, localFilePath);
+            var response = await Client.GetAsync(url);
+
+            using (var fileStream = new FileStream(localFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                await response.Content.CopyToAsync(fileStream);
+            }
+
+            var versionInfo = FileVersionInfo.GetVersionInfo(localFilePath);
+            if (versionInfo.ProductVersion != null) return new Version(versionInfo.ProductVersion);
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions as necessary, for example log the error message
+            Debug.WriteLine($@"An error occurred: {ex.Message}");
         }
 
-        var versionInfo = FileVersionInfo.GetVersionInfo(localFilePath);
-        if (versionInfo.ProductVersion != null) return new Version(versionInfo.ProductVersion);
         return new Version("1.0.0");
     }
 
-    private Version GetCurrentVersion()
+    private static Version? GetCurrentVersion()
     {
         return Assembly.GetExecutingAssembly().GetName().Version;
     }
 
-    private async Task DownloadLatestVersionAsync(string url)
+
+    private static async Task DownloadLatestVersionAsync(string url)
     {
-        using (var webClient = new WebClient())
+        try
         {
-            await webClient.DownloadFileTaskAsync(url, "update.exe");
+            var response = await Client.GetAsync(url);
+            using var fileStream = new FileStream("update.exe", FileMode.Create, FileAccess.Write, FileShare.None);
+            await response.Content.CopyToAsync(fileStream);
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions as necessary, for example log the error message
+            Debug.WriteLine($@"An error occurred: {ex.Message}");
         }
 
         // You will then need to implement how you would like to apply the update.
