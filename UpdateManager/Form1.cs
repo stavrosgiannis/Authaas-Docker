@@ -14,7 +14,7 @@ public partial class Form1 : Form
     /// <returns>
     ///     A string with the current UTC date and time in the format "[date] ".
     /// </returns>
-    public string DateForLog()
+    private static string DateForLog()
     {
         return $"[{DateTime.UtcNow}] ";
     }
