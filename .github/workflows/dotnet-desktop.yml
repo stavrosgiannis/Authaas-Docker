@@ -43,8 +43,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: release-${{ steps.calc_sha.outputs.SHA1 }}
-        release_name: Release ${{ steps.calc_sha.outputs.SHA1 }}
+        tag_name: sha1-${{ steps.calc_sha.outputs.SHA1 }}
+        release_name: Release sha1-${{ steps.calc_sha.outputs.SHA1 }}
         draft: false
         prerelease: false
 
