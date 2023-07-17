@@ -218,9 +218,9 @@ public partial class Form1 : Form
         }
     }
 
-    public async void TestMethodAsync() // Renamed to follow async naming conventions
+    public async void TestMethodAsync()
     {
-        listBoxLogs.Items.Add(DateForLog() + "Starting multi threading Task");
+        listBoxLogs.Items.Add(DateForLog() + "Starting multi threading Tasks");
 
         // Get all queue items and start processing them in parallel
         var queueItems = _test.GetQueueItems();
@@ -252,12 +252,36 @@ public partial class Form1 : Form
 
         // Check if all tasks completed successfully
         if (tasks.All(task => task.IsCompletedSuccessfully))
-        {
-            //listBoxLogs.Items.Add(DateForLog() + "Done!");
-            //listBoxLogs.Items.Add("-----------------------");
-        }
+            listBoxLogs.Items.Add(DateForLog() + "Running docker compose build");
     }
 
+    public async Task<GenericResult> RunPowerShellScriptAsAdminAsync(string scriptPath, string workDirectory)
+    {
+        try
+        {
+            // Create a new process start info
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = "powershell.exe",
+                Arguments = $"-NoProfile -ExecutionPolicy Bypass -File \"{scriptPath}\"",
+                WorkingDirectory = workDirectory,
+                //Verb = "runas", // runas verb to launch the process as an administrator
+                UseShellExecute = true,
+                CreateNoWindow = false
+            };
+
+            // Start the process
+            using var process = Process.Start(startInfo);
+            if (process != null) await process.WaitForExitAsync();
+            return GenericResult.Ok("Powershell script Task completed");
+        }
+        catch (Exception ex)
+        {
+            // Handle or log the exception
+            listBoxLogs.Items.Add(DateForLog() + $"Error running PowerShell script: {ex.Message}");
+            return GenericResult.Fail($"Error running PowerShell script: {ex.Message}");
+        }
+    }
 
     /// <summary>
     ///     This method is used to log computer information and add a log item to the list box when the form is loaded.

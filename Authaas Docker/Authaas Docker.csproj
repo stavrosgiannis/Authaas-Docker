@@ -8,6 +8,9 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <StartupObject>Authaas_Docker.Program</StartupObject>
+    <Description>This is the AuthaaS docker installer</Description>
+    <Copyright>PwC</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
