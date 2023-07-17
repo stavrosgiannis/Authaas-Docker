@@ -23,6 +23,7 @@ public class UpdateManagerClass
         if (currentVersion < latestVersion) await DownloadLatestVersionAsync(_downloadUrl);
     }
 
+
     private async Task<string> GetLatestVersionFromUrlAsync(string url)
     {
         using (var webClient = new WebClient())
