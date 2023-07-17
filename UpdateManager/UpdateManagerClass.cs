@@ -24,7 +24,6 @@ public class UpdateManagerClass
     }
 
 
-
     private async Task<string> GetLatestVersionFromUrlAsync(string url)
     {
         using (var webClient = new WebClient())
