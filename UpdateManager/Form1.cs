@@ -30,4 +30,5 @@ public partial class Form1 : Form
             "https://example.com/latest-version.exe");
         await updateManager.CheckForUpdatesAsync();
     }
+
 }
