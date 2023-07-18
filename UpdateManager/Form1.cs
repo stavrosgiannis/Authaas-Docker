@@ -61,7 +61,7 @@ public partial class Form1 : Form
 
         // Remove the "commit-" prefix from the tag
         var tag = release?.tag_name;
-        if (tag != null && tag.StartsWith("commit-")) tag = tag.Substring("commit-".Length);
+        if (tag != null && tag.StartsWith("sha1-")) tag = tag.Substring("sha1-".Length);
 
         return tag;
     }
