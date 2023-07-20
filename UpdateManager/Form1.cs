@@ -13,6 +13,11 @@ public partial class Form1 : Form
     }
 
 
+
+
+
+
+
     /// <summary>
     ///     Returns a string with the current UTC date and time.
     /// </summary>
@@ -24,9 +29,15 @@ public partial class Form1 : Form
         return $"[{DateTime.UtcNow}] ";
     }
 
+
     private void Form1_Load(object sender, EventArgs e)
     {
     }
+
+
+
+
+
 
     private async void Form1_Shown(object sender, EventArgs e)
     {
@@ -35,7 +46,16 @@ public partial class Form1 : Form
         //    "https://example.com/latest-version.exe");
         //await updateManager.CheckForUpdatesAsync();
 
+
+
+
+
+
         listBox1.Items.Add(DateForLog() + $"{CalculateCurrentAppHash()}");
+
+
+
+
         var result = await GetLatestReleaseTagAsync("stavrosgiannis", "Authaas-Docker");
         listBox1.Items.Add(DateForLog() +
                            $"{result}");
@@ -51,6 +71,8 @@ public partial class Form1 : Form
         }
     }
 
+
+
     private async Task<string?> GetLatestReleaseTagAsync(string repoOwner, string repoName)
     {
         var url = $"https://api.github.com/repos/{repoOwner}/{repoName}/releases/latest";
@@ -65,4 +87,8 @@ public partial class Form1 : Form
 
         return tag;
     }
+
+
+
+
 }
