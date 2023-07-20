@@ -5,15 +5,18 @@ on:
   push:
 
 jobs:
-  prettier:
+  code-quality:
     permissions: write-all
     runs-on: ubuntu-latest
     
     steps:
-      - name: Prettier Code Formatting
-      # You may pin to the exact commit or the version.
-      # uses: permafrost-dev/prettier-docker-ga@259e09f952187003c6f4c14e10c3f1a8d17ba715
-        uses: permafrost-dev/prettier-docker-ga@v1.0.5
+      - name: security-devops-action
+        uses: microsoft/security-devops-action@v1.7.2
+    
+      - name: Resharper cleanup
+        # You may pin to the exact commit or the version.
+        # uses: LiamAjones/resharper-codecleanup@ef8268a300b6963940f79197099482aab5aa773b
+        uses: LiamAjones/resharper-codecleanup@V8
 
   build:
     permissions: write-all
@@ -22,8 +25,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: security-devops-action
-      uses: microsoft/security-devops-action@v1.7.2
+
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
