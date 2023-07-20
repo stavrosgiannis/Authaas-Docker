@@ -3,6 +3,7 @@ run-name: ${{ github.actor }}
 
 on:
   push:
+    branches: [ master ]
 
 jobs:
   build:
@@ -14,8 +15,6 @@ jobs:
 
     - name: Dependency Review
       uses: actions/dependency-review-action@v3.0.6
-      with:
-        base-ref: ${{ github.base_ref }}
     
     - name: security-devops-action
       uses: microsoft/security-devops-action@v1.7.2
