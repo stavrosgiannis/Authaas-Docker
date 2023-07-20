@@ -13,7 +13,7 @@ jobs:
     - uses: actions/checkout@v3
     
     - name: Run OWASP Dependency-Check scan
-      uses: jeremylong/DependencyCheck@v6
+      uses: jeremylong/DependencyCheck@v5
       with:
         project: 'Authaas Docker'
         scanpath: './'
