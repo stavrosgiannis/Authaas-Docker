@@ -11,37 +11,9 @@ jobs:
     
     steps:
       - uses: actions/checkout@v3
-    
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '6.0.x'
-
-      - name: Restore dependencies
-        run: dotnet restore
-    
-      - name: Install dotnet-format
-        run: dotnet tool install -g dotnet-format
-
-      - name: Format code
-        run: dotnet format
-
-      - name: Set up Git user
-        run: |
-          git config --global user.name "Cleanup Bot"
-          git config --global user.email "stavros.g@web.de"
-
-      - name: Commit formatting changes
-        run: |
-          git add --all
-          if (-not $(if (git diff --cached --quiet) { $false } else { $true })) { git commit -m "Apply code formatting" }
-        shell: pwsh
-
-
-      - name: Push changes
-        run: git push origin ${GITHUB_REF:11}
-
-
+      
+      - name: security-devops-action
+        uses: microsoft/security-devops-action@v1.7.2
 
   build:
     permissions: write-all
@@ -49,9 +21,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    
-    - name: security-devops-action
-      uses: microsoft/security-devops-action@v1.7.2
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
