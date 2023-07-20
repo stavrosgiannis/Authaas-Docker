@@ -13,12 +13,9 @@ jobs:
 
     - name: Dependency Review
       uses: actions/dependency-review-action@v3.0.6
-      with:
-        license-check: true # optional
-        # A boolean to determine if vulnerability checks should be performed
-        vulnerability-check: true # optional
-        # A boolean to determine if the report should be posted as a comment in the PR itself. Setting this to true requires you to give the workflow the write permissions for pull-requests
-        comment-summary-in-pr: true # optional
+    
+    - name: security-devops-action
+      uses: microsoft/security-devops-action@v1.7.2
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
