@@ -3,7 +3,6 @@ run-name: ${{ github.actor }}
 
 on:
   push:
-    branches: [ master ]
 
 jobs:
   build:
@@ -13,8 +12,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Dependency Review
-      uses: actions/dependency-review-action@v3.0.6
+    #- name: Dependency Review
+    #  uses: actions/dependency-review-action@v3.0.6
     
     - name: security-devops-action
       uses: microsoft/security-devops-action@v1.7.2
