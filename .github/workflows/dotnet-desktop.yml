@@ -12,12 +12,10 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Run OWASP Dependency-Check scan
-      uses: jeremylong/DependencyCheck@v5
-      with:
-        project: 'Authaas Docker'
-        scanpath: './'
-        format: 'ALL'
+    - name: Prettier Code Formatting
+      # You may pin to the exact commit or the version.
+      # uses: permafrost-dev/prettier-docker-ga@259e09f952187003c6f4c14e10c3f1a8d17ba715
+      uses: permafrost-dev/prettier-docker-ga@v1.0.5
     
     - name: security-devops-action
       uses: microsoft/security-devops-action@v1.7.2
