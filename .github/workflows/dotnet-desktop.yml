@@ -10,10 +10,14 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v2
-
-    #- name: Dependency Review
-    #  uses: actions/dependency-review-action@v3.0.6
+    - uses: actions/checkout@v3
+    
+    - name: Run OWASP Dependency-Check scan
+      uses: jeremylong/DependencyCheck@v6
+      with:
+        project: 'Authaas Docker'
+        scanpath: './'
+        format: 'ALL'
     
     - name: security-devops-action
       uses: microsoft/security-devops-action@v1.7.2
