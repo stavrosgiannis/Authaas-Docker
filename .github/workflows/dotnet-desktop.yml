@@ -26,6 +26,20 @@ jobs:
       - name: Format code
         run: dotnet format
 
+      - name: Set up Git user
+        run: |
+          git config --global user.name "Cleanup Bot"
+          git config --global user.email "stavros.g@web.de"
+
+      - name: Commit formatting changes
+        run: |
+          git add --all
+          git commit -m "Apply code formatting" || exit 0 
+
+      - name: Push changes
+        run: git push origin ${GITHUB_REF:11}
+
+
 
   build:
     permissions: write-all
