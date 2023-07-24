@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Authaas_Docker.Models;
 
 namespace Authaas_Docker;
 
@@ -24,17 +25,15 @@ public partial class UpdateManager : Form
     {
         try
         {
-            listBox1.Items.Add(DateForLog() + $"UpdateManager: {CalculateCurrentAppHash()}");
-            if (File.Exists("AuthaasDocker.exe"))
-                listBox1.Items.Add(DateForLog() + $"AuthaasDocker: {CalculateFileHash("AuthaasDocker.exe")}");
-            else listBox1.Items.Add(DateForLog() + "AuthaasDocker.exe not found!");
+            listBox1.Items.Add(DateForLog() +
+                               $"AuthaasDocker: {GitHubRelease.CalculateCurrentAppHash()}");
 
-
-            var result = await GetLatestReleaseTagAsync("stavrosgiannis", "Authaas-Docker");
+            var result = await GitHubRelease.GetLatestReleaseTagAsync("stavrosgiannis", "Authaas-Docker");
             listBox1.Items.Add(DateForLog() +
                                $"Newest AuthaasDocker: {result}");
 
-            await DownloadLatestReleaseIfUpdateAvailable(CalculateFileHash("AuthaasDocker.exe"), "stavrosgiannis",
+            await GitHubRelease.DownloadLatestReleaseIfUpdateAvailable(GitHubRelease.CalculateCurrentAppHash(),
+                "stavrosgiannis",
                 "Authaas-Docker");
         }
         catch (Exception ex)

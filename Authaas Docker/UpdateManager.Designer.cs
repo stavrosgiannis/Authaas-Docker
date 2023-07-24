@@ -39,22 +39,22 @@
             listBox1.ItemHeight = 15;
             listBox1.Location = new Point(0, 0);
             listBox1.Name = "listBox1";
-            listBox1.Size = new Size(800, 192);
+            listBox1.Size = new Size(561, 121);
             listBox1.TabIndex = 0;
             // 
             // progressBar1
             // 
             progressBar1.Dock = DockStyle.Bottom;
-            progressBar1.Location = new Point(0, 169);
+            progressBar1.Location = new Point(0, 98);
             progressBar1.Name = "progressBar1";
-            progressBar1.Size = new Size(800, 23);
+            progressBar1.Size = new Size(561, 23);
             progressBar1.TabIndex = 1;
             // 
             // UpdateManager
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 192);
+            ClientSize = new Size(561, 121);
             Controls.Add(progressBar1);
             Controls.Add(listBox1);
             FormBorderStyle = FormBorderStyle.FixedToolWindow;

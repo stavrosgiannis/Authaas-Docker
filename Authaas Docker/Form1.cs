@@ -316,4 +316,10 @@ public partial class Form1 : Form
     {
         TestMethodAsync();
     }
+
+    private void button2_Click(object sender, EventArgs e)
+    {
+        var updateManagerForm = new UpdateManager();
+        updateManagerForm.Show();
+    }
 }

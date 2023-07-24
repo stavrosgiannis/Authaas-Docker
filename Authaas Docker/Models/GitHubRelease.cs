@@ -8,7 +8,7 @@ namespace Authaas_Docker.Models
         private static readonly HttpClient Client = new();
         public string? tag_name { get; set; }
 
-        public string CalculateCurrentAppHash()
+        public static string CalculateCurrentAppHash()
         {
             using (var stream = File.OpenRead(Application.ExecutablePath))
             {
@@ -18,7 +18,7 @@ namespace Authaas_Docker.Models
             }
         }
 
-        public string CalculateFileHash(string filePath)
+        public static string CalculateFileHash(string filePath)
         {
             using (var stream = File.OpenRead(filePath))
             {
@@ -28,7 +28,7 @@ namespace Authaas_Docker.Models
             }
         }
 
-        public async Task DownloadLatestRelease(string repoOwner, string repoName, string tag)
+        public static async Task DownloadLatestRelease(string repoOwner, string repoName, string tag)
         {
             var url =
                 $"https://github.com/{repoOwner}/{repoName}/releases/download/{tag}/file"; // replace 'file' with the actual filename
@@ -42,7 +42,8 @@ namespace Authaas_Docker.Models
         }
 
 
-        public async Task DownloadLatestReleaseIfUpdateAvailable(string currentHash, string repoOwner, string repoName)
+        public static async Task DownloadLatestReleaseIfUpdateAvailable(string currentHash, string repoOwner,
+            string repoName)
         {
             var latestTag = await GetLatestReleaseTagAsync(repoOwner, repoName);
             if (latestTag == null) throw new Exception("Could not retrieve latest release tag.");
@@ -52,7 +53,7 @@ namespace Authaas_Docker.Models
         }
 
 
-        public async Task<string?> GetLatestReleaseTagAsync(string repoOwner, string repoName)
+        public static async Task<string?> GetLatestReleaseTagAsync(string repoOwner, string repoName)
         {
             var url = $"https://api.github.com/repos/{repoOwner}/{repoName}/releases/latest";
             Client.DefaultRequestHeaders.UserAgent
