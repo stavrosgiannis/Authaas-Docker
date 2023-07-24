@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text.Json;
 
@@ -32,23 +33,27 @@ public partial class Form1 : Form
 
     private async void Form1_Shown(object sender, EventArgs e)
     {
-        //listBox1.Items.Add($"{DateForLog()}Checking for updates");
-        //var updateManager = new UpdateManagerClass("https://example.com/latest-version.txt",
-        //    "https://example.com/latest-version.exe");
-        //await updateManager.CheckForUpdatesAsync();
+        try
+        {
+            listBox1.Items.Add(DateForLog() + $"UpdateManager: {CalculateCurrentAppHash()}");
+            if (File.Exists("AuthaasDocker.exe"))
+                listBox1.Items.Add(DateForLog() + $"AuthaasDocker: {CalculateFileHash("AuthaasDocker.exe")}");
+            else listBox1.Items.Add(DateForLog() + "AuthaasDocker.exe not found!");
 
 
-        listBox1.Items.Add(DateForLog() + $"UpdateManager: {CalculateCurrentAppHash()}");
-        if (File.Exists("AuthaasDocker.exe"))
-            listBox1.Items.Add(DateForLog() + $"AuthaasDocker: {CalculateFileHash("AuthaasDocker.exe")}");
-        else listBox1.Items.Add(DateForLog() + $"AuthaasDocker.exe not found!");
+            var result = await GetLatestReleaseTagAsync("stavrosgiannis", "Authaas-Docker");
+            listBox1.Items.Add(DateForLog() +
+                               $"Newest AuthaasDocker: {result}");
 
-
-        var result = await GetLatestReleaseTagAsync("stavrosgiannis", "Authaas-Docker");
-        listBox1.Items.Add(DateForLog() +
-                           $"Newest AuthaasDocker: {result}");
-
-        await DownloadLatestReleaseIfUpdateAvailable(CalculateFileHash("AuthaasDocker.exe"), "stavrosgiannis", "Authaas-Docker");
+            await DownloadLatestReleaseIfUpdateAvailable(CalculateFileHash("AuthaasDocker.exe"), "stavrosgiannis",
+                "Authaas-Docker");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            MessageBox.Show(ex.Message, @"Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            Application.Exit();
+        }
     }
 
     private string CalculateCurrentAppHash()
