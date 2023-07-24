@@ -46,7 +46,7 @@ jobs:
     - name: Calculate SHA1
       id: calc_sha
       run: |
-        echo "::set-output name=SHA1::$(openssl dgst -sha1 ./publish/Authaas Docker.exe | awk '{print $2}')"
+        echo "::set-output name=SHA1::$(openssl dgst -sha1 "./publish/Authaas Docker.exe" | awk '{print $2}')"
 
     - name: Create Release
       id: create_release
