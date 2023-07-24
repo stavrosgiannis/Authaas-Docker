@@ -38,12 +38,17 @@ public partial class Form1 : Form
         //await updateManager.CheckForUpdatesAsync();
 
 
-        listBox1.Items.Add(DateForLog() + $"{CalculateCurrentAppHash()}");
+        listBox1.Items.Add(DateForLog() + $"UpdateManager: {CalculateCurrentAppHash()}");
+        if (File.Exists("AuthaasDocker.exe"))
+            listBox1.Items.Add(DateForLog() + $"AuthaasDocker: {CalculateFileHash("AuthaasDocker.exe")}");
+        else listBox1.Items.Add(DateForLog() + $"AuthaasDocker.exe not found!");
 
 
         var result = await GetLatestReleaseTagAsync("stavrosgiannis", "Authaas-Docker");
         listBox1.Items.Add(DateForLog() +
-                           $"{result}");
+                           $"Newest AuthaasDocker: {result}");
+
+        await DownloadLatestReleaseIfUpdateAvailable(CalculateFileHash("AuthaasDocker.exe"), "stavrosgiannis", "Authaas-Docker");
     }
 
     private string CalculateCurrentAppHash()
@@ -55,6 +60,42 @@ public partial class Form1 : Form
             return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
         }
     }
+
+    private string CalculateFileHash(string filePath)
+    {
+        using (var stream = File.OpenRead(filePath))
+        {
+            using var sha = SHA1.Create();
+            var hash = sha.ComputeHash(stream);
+            return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+        }
+    }
+
+    private async Task DownloadLatestRelease(string repoOwner, string repoName, string tag)
+    {
+        var url = $"https://github.com/{repoOwner}/{repoName}/releases/download/{tag}/file";  // replace 'file' with the actual filename
+        var response = await Client.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+        await using var stream = await response.Content.ReadAsStreamAsync();
+        await using var fileStream = File.Create("AuthaasDocker.exe");  // replace with the actual path where you want to save the file
+        await stream.CopyToAsync(fileStream);
+    }
+
+
+    private async Task DownloadLatestReleaseIfUpdateAvailable(string currentHash, string repoOwner, string repoName)
+    {
+        var latestTag = await GetLatestReleaseTagAsync(repoOwner, repoName);
+        if (latestTag == null)
+        {
+            throw new Exception("Could not retrieve latest release tag.");
+        }
+
+        if (!currentHash.Equals(latestTag, StringComparison.OrdinalIgnoreCase))
+        {
+            await DownloadLatestRelease(repoOwner, repoName, latestTag);
+        }
+    }
+
 
 
     private async Task<string?> GetLatestReleaseTagAsync(string repoOwner, string repoName)
