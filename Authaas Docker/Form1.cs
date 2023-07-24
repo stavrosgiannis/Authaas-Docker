@@ -153,6 +153,12 @@ public partial class Form1 : Form
         return items;
     }
 
+    /// <summary>
+    ///     Processes a queue item to check if it is installed, download, install, and clean up temp data.
+    /// </summary>
+    /// <returns>
+    ///     A Task that represents the asynchronous operation.
+    /// </returns>
     private async Task ProcessQueueItemAsync(QueueItem<DownloadableItem> item)
     {
         listBoxLogs.Items.Add(DateForLog() + $"Checking if {item.Data.Name} is installed");
@@ -255,6 +261,12 @@ public partial class Form1 : Form
             listBoxLogs.Items.Add(DateForLog() + "Running docker compose build");
     }
 
+    /// <summary>
+    ///     Runs a PowerShell script as an administrator.
+    /// </summary>
+    /// <param name="scriptPath">The path of the PowerShell script.</param>
+    /// <param name="workDirectory">The working directory for the PowerShell script.</param>
+    /// <returns>A <see cref="GenericResult" /> indicating the result of the operation.</returns>
     public async Task<GenericResult> RunPowerShellScriptAsAdminAsync(string scriptPath, string workDirectory)
     {
         try
