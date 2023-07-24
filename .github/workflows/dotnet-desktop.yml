@@ -46,7 +46,7 @@ jobs:
     - name: Calculate SHA1
       id: calc_sha
       run: |
-        echo "::set-output name=SHA1::$(openssl dgst -sha1 ./publish/AuthaasDocker.exe | awk '{print $2}')"
+        echo "::set-output name=SHA1::$(openssl dgst -sha1 ./publish/AuthaasDocker.dll | awk '{print $2}')"
 
     - name: Create Release
       id: create_release
@@ -81,14 +81,4 @@ jobs:
         asset_name: AuthaasDocker.exe
         asset_content_type: application/octet-stream
         
-    - name: Upload Additional Release Asset
-      id: upload-additional-updater-release-asset 
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} 
-        asset_path: ./publish/UpdateManager.exe
-        asset_name: UpdateManager.exe
-        asset_content_type: application/octet-stream
 
