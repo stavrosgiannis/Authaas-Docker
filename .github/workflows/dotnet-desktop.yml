@@ -69,3 +69,15 @@ jobs:
         asset_path: ./authaas-docker.zip
         asset_name: authaas-docker.zip
         asset_content_type: application/zip
+        
+    - name: Upload Additional Release Asset
+      id: upload-additional-release-asset 
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} 
+        asset_path: ./publish/Authaas Docker.exe
+        asset_name: Authaas Docker.exe
+        asset_content_type: application/octet-stream
+
