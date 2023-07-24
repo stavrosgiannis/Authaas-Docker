@@ -32,9 +32,9 @@ public partial class UpdateManager : Form
             listBox1.Items.Add(DateForLog() +
                                $"Newest AuthaasDocker: {result}");
 
-            await GitHubRelease.DownloadLatestReleaseIfUpdateAvailable(GitHubRelease.CalculateCurrentAppHash(),
-                "stavrosgiannis",
-                "Authaas-Docker");
+            //    await GitHubRelease.DownloadLatestReleaseIfUpdateAvailable(GitHubRelease.CalculateCurrentAppHash(),
+            //        "stavrosgiannis",
+            //        "Authaas-Docker");
         }
         catch (Exception ex)
         {

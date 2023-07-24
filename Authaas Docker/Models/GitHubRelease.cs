@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.Reflection;
+using System.Security.Cryptography;
 using System.Text.Json;
 
 namespace Authaas_Docker.Models
@@ -10,12 +11,16 @@ namespace Authaas_Docker.Models
 
         public static string CalculateCurrentAppHash()
         {
-            using (var stream = File.OpenRead(Application.ExecutablePath))
-            {
-                using var sha = SHA1.Create();
-                var hash = sha.ComputeHash(stream);
-                return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-            }
+            var location = Assembly.GetEntryAssembly()?.Location;
+            if (location != null)
+                using (var stream = File.OpenRead(location))
+                {
+                    using var sha = SHA1.Create();
+                    var hash = sha.ComputeHash(stream);
+                    return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                }
+
+            return "";
         }
 
         public static string CalculateFileHash(string filePath)
