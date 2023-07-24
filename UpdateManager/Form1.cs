@@ -13,11 +13,6 @@ public partial class Form1 : Form
     }
 
 
-
-
-
-
-
     /// <summary>
     ///     Returns a string with the current UTC date and time.
     /// </summary>
@@ -35,10 +30,6 @@ public partial class Form1 : Form
     }
 
 
-
-
-
-
     private async void Form1_Shown(object sender, EventArgs e)
     {
         //listBox1.Items.Add($"{DateForLog()}Checking for updates");
@@ -47,13 +38,7 @@ public partial class Form1 : Form
         //await updateManager.CheckForUpdatesAsync();
 
 
-
-
-
-
         listBox1.Items.Add(DateForLog() + $"{CalculateCurrentAppHash()}");
-
-
 
 
         var result = await GetLatestReleaseTagAsync("stavrosgiannis", "Authaas-Docker");
@@ -72,7 +57,6 @@ public partial class Form1 : Form
     }
 
 
-
     private async Task<string?> GetLatestReleaseTagAsync(string repoOwner, string repoName)
     {
         var url = $"https://api.github.com/repos/{repoOwner}/{repoName}/releases/latest";
@@ -87,8 +71,4 @@ public partial class Form1 : Form
 
         return tag;
     }
-
-
-
-
 }
