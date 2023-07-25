@@ -46,11 +46,18 @@ jobs:
     - name: List publish directory
       run: ls -l './Authaas Docker'
 
-  
+    - name: Download sigcheck
+      run: |
+        Invoke-WebRequest -Uri "https://download.sysinternals.com/files/Sigcheck.zip" -OutFile "sigcheck.zip"
+        Expand-Archive -Path "sigcheck.zip" -DestinationPath "."
+
     - name: Extract version
       id: get_version
       run: |
-        echo "VERSION=$(strings ./publish/YourApp.exe | egrep '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | head -1)" >> $GITHUB_ENV
+        $version = & .\sigcheck64.exe -n -nobanner ./publish/YourApp.exe
+        echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
+        
+    
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
