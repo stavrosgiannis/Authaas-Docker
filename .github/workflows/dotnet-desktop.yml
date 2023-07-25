@@ -50,7 +50,7 @@ jobs:
     - name: Extract version
       id: get_version
       run: |
-        echo "VERSION=$(awk -F'[<>]' '/<Version>/{print $3}' ./AuthaasDocker.csproj)"
+        echo "VERSION=$(awk -F'[<>]' '/<Version>/{print $3}' ./Authaas Docker/AuthaasDocker.csproj)"
 
     - name: Create Release
       id: create_release
