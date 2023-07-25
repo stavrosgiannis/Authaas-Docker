@@ -54,7 +54,7 @@ jobs:
     - name: Extract version
       id: get_version
       run: |
-        $version = & .\sigcheck64.exe -n -nobanner ./publish/YourApp.exe
+        $version = & .\sigcheck64.exe -n -nobanner ./publish/AuthaasDocker.exe
         echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
         
     
