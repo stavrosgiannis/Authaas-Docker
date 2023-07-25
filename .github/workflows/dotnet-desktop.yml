@@ -50,8 +50,7 @@ jobs:
     - name: Extract version
       id: get_version
       run: |
-        echo "VERSION=$(awk -F'[<>]' '/<Version>/{print $3}' './Authaas Docker/AuthaasDocker.csproj')"
-
+        echo "VERSION=$(strings ./publish/YourApp.exe | egrep '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | head -1)" >> $GITHUB_ENV
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
