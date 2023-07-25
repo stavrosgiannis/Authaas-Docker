@@ -46,7 +46,7 @@ jobs:
     - name: Calculate SHA1
       id: calc_sha
       run: |
-        echo "SHA1=$(openssl dgst -sha1 ./publish/AuthaasDocker.dll | awk '{print $2}')" >> $GITHUB_OUTPUT
+        echo "SHA1=$(openssl dgst -sha1 ./publish/AuthaasDocker.dll | awk '{print $2}')"
 
     - name: Create Release
       id: create_release
