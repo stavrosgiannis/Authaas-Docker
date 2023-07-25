@@ -46,7 +46,7 @@ jobs:
     - name: Calculate SHA1
       id: calc_sha
       run: |
-        echo "::set-output name=SHA1::$(openssl dgst -sha1 ./publish/AuthaasDocker.dll | awk '{print $2}')"
+        echo "SHA1=$(openssl dgst -sha1 ./publish/AuthaasDocker.dll | awk '{print $2}')" >> $GITHUB_ENV
 
     - name: Create Release
       id: create_release
@@ -77,8 +77,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} 
-        asset_path: ./publish/AuthaasDocker.exe
-        asset_name: AuthaasDocker.exe
+        asset_path: ./publish/AuthaasDocker.dll
+        asset_name: AuthaasDocker.dll
         asset_content_type: application/octet-stream
         
 
