@@ -42,7 +42,11 @@ jobs:
         files: ./publish/
         recursive: true
         dest: ./authaas-docker.zip
+        
+    - name: List publish directory
+      run: ls -l ./publish
 
+  
     - name: Extract version
       id: get_version
       run: |
