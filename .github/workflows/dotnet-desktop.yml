@@ -44,7 +44,7 @@ jobs:
         dest: ./authaas-docker.zip
         
     - name: List publish directory
-      run: ls -l ./publish
+      run: ls -l
 
   
     - name: Extract version
