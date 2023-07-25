@@ -46,7 +46,7 @@ jobs:
     - name: Extract version
       id: get_version
       run: |
-        echo "VERSION=$(dotnet run -p ./get-version/)" >> $GITHUB_ENV
+        echo "VERSION=$(awk -F'[<>]' '/<Version>/{print $3}' ./AuthaasDocker.csproj)"
 
     - name: Create Release
       id: create_release
