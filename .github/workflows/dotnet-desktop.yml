@@ -43,11 +43,10 @@ jobs:
         recursive: true
         dest: ./authaas-docker.zip
 
-
-    - name: Calculate SHA1
-      id: calc_sha
+    - name: Extract version
+      id: get_version
       run: |
-        echo "::set-output name=SHA1::$(openssl dgst -sha1 ./publish/AuthaasDocker.dll | awk '{print $2}')"
+        echo "VERSION=$(dotnet run -p ./get-version/)" >> $GITHUB_ENV
 
     - name: Create Release
       id: create_release
@@ -55,8 +54,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: sha1-${{ steps.calc_sha.outputs.SHA1 }}
-        release_name: Release sha1-${{ steps.calc_sha.outputs.SHA1 }}
+        tag_name: v${{ env.VERSION }}  # Added 'v' prefix
+        release_name: Release ${{ env.VERSION }}
         draft: false
         prerelease: false
 
