@@ -43,10 +43,11 @@ jobs:
         recursive: true
         dest: ./authaas-docker.zip
 
+
     - name: Calculate SHA1
       id: calc_sha
       run: |
-        echo "name=SHA1::$(openssl dgst -sha1 ./publish/AuthaasDocker.dll | awk '{print $2}')" >> $GITHUB_OUTPUT
+        echo "::set-output name=SHA1::$(openssl dgst -sha1 ./publish/AuthaasDocker.dll | awk '{print $2}')"
 
     - name: Create Release
       id: create_release
