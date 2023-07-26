@@ -47,13 +47,18 @@ namespace Authaas_Docker.Models
         }
 
 
-        public static async Task DownloadLatestReleaseIfUpdateAvailable(string currentHash, string repoOwner,
-            string repoName)
+        public static async Task DownloadLatestReleaseIfUpdateAvailable(string currentVersion, string repoOwner, string repoName)
         {
             var latestTag = await GetLatestReleaseTagAsync(repoOwner, repoName);
             if (latestTag == null) throw new Exception("Could not retrieve latest release tag.");
 
-            if (!currentHash.Equals(latestTag, StringComparison.OrdinalIgnoreCase))
+            // Assuming that your tags are in the format "vX.Y.Z", we remove the leading 'v' 
+            // to convert the tag into a version string
+            var latestVersionStr = latestTag.TrimStart('v');
+            var latestVersion = new Version(latestVersionStr);
+
+            // Compare the current version with the latest version
+            if (currentVersion.CompareTo(latestVersion) < 0)
                 await DownloadLatestRelease(repoOwner, repoName, latestTag);
         }
 

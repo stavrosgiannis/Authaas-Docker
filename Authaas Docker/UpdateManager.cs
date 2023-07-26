@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Reflection;
 using Authaas_Docker.Models;
 
 namespace Authaas_Docker;
@@ -26,7 +27,7 @@ public partial class UpdateManager : Form
         try
         {
             listBox1.Items.Add(DateForLog() +
-                               $"AuthaasDocker: {GitHubRelease.CalculateCurrentAppHash()}");
+                               $"AuthaasDocker v{Assembly.GetExecutingAssembly().GetName().Version}: {GitHubRelease.CalculateCurrentAppHash()}");
 
             var result = await GitHubRelease.GetLatestReleaseTagAsync("stavrosgiannis", "Authaas-Docker");
             listBox1.Items.Add(DateForLog() +
