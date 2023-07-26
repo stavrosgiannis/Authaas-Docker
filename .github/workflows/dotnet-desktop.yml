@@ -42,20 +42,29 @@ jobs:
         files: ./publish/
         recursive: true
         dest: ./authaas-docker.zip
+        
+    - name: List publish directory
+      run: ls -l './Authaas Docker'
 
-    - name: Calculate SHA1
-      id: calc_sha
+    - name: Download sigcheck
       run: |
-        echo "SHA1=$(openssl dgst -sha1 ./publish/AuthaasDocker.dll | awk '{print $2}')"
+        Invoke-WebRequest -Uri "https://download.sysinternals.com/files/Sigcheck.zip" -OutFile "sigcheck.zip"
+        Expand-Archive -Path "sigcheck.zip" -DestinationPath "."
 
+    - name: Extract version
+      id: get_version
+      run: |
+        $version = [regex]::match((Get-Content './Authaas Docker/obj/Release/net6.0-windows/AuthaasDocker.AssemblyInfo.cs'), 'AssemblyVersionAttribute\("([^"]*)').Groups[1].Value
+        echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
+    
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: sha1-${{ steps.calc_sha.outputs.SHA1 }}
-        release_name: Release sha1-${{ steps.calc_sha.outputs.SHA1 }}
+        tag_name: v${{ env.VERSION }}  # Added 'v' prefix
+        release_name: Release ${{ env.VERSION }}
         draft: false
         prerelease: false
 
