@@ -32,10 +32,13 @@ public partial class UpdateManager : Form
             listBox1.Items.Add(DateForLog() +
                                $"Newest AuthaasDocker: {result}");
 
-            await GitHubRelease.DownloadLatestReleaseIfUpdateAvailable(
+            listBox1.Items.Add(DateForLog() +
+                               "Checking if update is needed..");
+            var result2 = await GitHubRelease.DownloadLatestReleaseIfUpdateAvailable(
                 Assembly.GetExecutingAssembly().GetName().Version,
                 "stavrosgiannis",
-                "Authaas-Docker");
+                "Authaas-Docker", progressBar1);
+            listBox1.Items.Add(DateForLog() + $"{result2.Message}");
         }
         catch (Exception ex)
         {

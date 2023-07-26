@@ -4,10 +4,6 @@ public class GenericResult
 {
     protected GenericResult(bool success, string message = "")
     {
-        if (success && message != string.Empty)
-            throw new InvalidOperationException();
-        if (!success && message == string.Empty)
-            throw new InvalidOperationException();
         Success = success;
         Message = message;
     }
@@ -29,6 +25,11 @@ public class GenericResult
     public static GenericResult Ok()
     {
         return new GenericResult(true, string.Empty);
+    }
+
+    public static GenericResult Ok(string message)
+    {
+        return new GenericResult(true, message);
     }
 
     public static GenericResult<T> Ok<T>(T value)
