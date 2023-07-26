@@ -54,9 +54,8 @@ jobs:
     - name: Extract version
       id: get_version
       run: |
-        $version = & .\sigcheck64.exe -n -nobanner ./publish/AuthaasDocker.exe
+        $version = [regex]::match((Get-Content './Authaas Docker/obj/Release/net6.0-windows/AuthaasDocker.AssemblyInfo.cs'), 'AssemblyFileVersionAttribute\("([^"]*)').Groups[1].Value
         echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
-        
     
     - name: Create Release
       id: create_release
