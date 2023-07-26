@@ -9,6 +9,10 @@ namespace Authaas_Docker.Models
         private static readonly HttpClient Client = new();
         public string? tag_name { get; set; }
 
+        /// <summary>
+        ///     Calculates the current application hash.
+        /// </summary>
+        /// <returns>The current application hash.</returns>
         public static string CalculateCurrentAppHash()
         {
             var location = Assembly.GetEntryAssembly()?.Location;
@@ -23,6 +27,11 @@ namespace Authaas_Docker.Models
             return "";
         }
 
+        /// <summary>
+        ///     Calculates the SHA1 hash of a file.
+        /// </summary>
+        /// <param name="filePath">The path of the file to calculate the hash for.</param>
+        /// <returns>The SHA1 hash of the file.</returns>
         public static string CalculateFileHash(string filePath)
         {
             using (var stream = File.OpenRead(filePath))
@@ -33,6 +42,13 @@ namespace Authaas_Docker.Models
             }
         }
 
+        /// <summary>
+        ///     Downloads the latest release of a given repository from GitHub.
+        /// </summary>
+        /// <param name="repoOwner">The owner of the repository.</param>
+        /// <param name="repoName">The name of the repository.</param>
+        /// <param name="tag">The tag of the release.</param>
+        /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
         public static async Task DownloadLatestRelease(string repoOwner, string repoName, string tag)
         {
             var url =
@@ -47,22 +63,39 @@ namespace Authaas_Docker.Models
         }
 
 
-        public static async Task DownloadLatestReleaseIfUpdateAvailable(string currentVersion, string repoOwner, string repoName)
+        /// <summary>
+        ///     Downloads the latest release from a GitHub repository if the current version is older than the latest version.
+        /// </summary>
+        /// <param name="currentVersion">The current version of the application.</param>
+        /// <param name="repoOwner">The owner of the GitHub repository.</param>
+        /// <param name="repoName">The name of the GitHub repository.</param>
+        /// <returns>
+        ///     An asynchronous task that downloads the latest release from the GitHub repository if the current version is older
+        ///     than the latest version.
+        /// </returns>
+        public static async Task DownloadLatestReleaseIfUpdateAvailable(Version? currentVersion, string repoOwner,
+            string repoName)
         {
             var latestTag = await GetLatestReleaseTagAsync(repoOwner, repoName);
             if (latestTag == null) throw new Exception("Could not retrieve latest release tag.");
 
-            // Assuming that your tags are in the format "vX.Y.Z", we remove the leading 'v' 
+            // Assuming that your tags are in the format "vX.Y.Z.X", we remove the leading 'v' 
             // to convert the tag into a version string
             var latestVersionStr = latestTag.TrimStart('v');
             var latestVersion = new Version(latestVersionStr);
 
             // Compare the current version with the latest version
-            if (currentVersion.CompareTo(latestVersion) < 0)
+            if (currentVersion != null && currentVersion.CompareTo(latestVersion) < 0)
                 await DownloadLatestRelease(repoOwner, repoName, latestTag);
         }
 
 
+        /// <summary>
+        ///     Gets the latest release tag from a GitHub repository.
+        /// </summary>
+        /// <param name="repoOwner">The owner of the repository.</param>
+        /// <param name="repoName">The name of the repository.</param>
+        /// <returns>The latest release tag, or null if the repository does not exist.</returns>
         public static async Task<string?> GetLatestReleaseTagAsync(string repoOwner, string repoName)
         {
             var url = $"https://api.github.com/repos/{repoOwner}/{repoName}/releases/latest";
