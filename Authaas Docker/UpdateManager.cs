@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics;
+using System.Reflection;
 using Authaas_Docker.Models;
 
 namespace Authaas_Docker;
@@ -21,6 +22,27 @@ public partial class UpdateManager : Form
         return $"[{DateTime.UtcNow}] ";
     }
 
+    public static void RunPowerShellScriptFile(string scriptPath)
+    {
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = "powershell.exe",
+            Arguments = $"-NoProfile -ExecutionPolicy Bypass -File \"{scriptPath}\"",
+            UseShellExecute = false,
+            RedirectStandardOutput = true
+        };
+
+        using (var process = new Process { StartInfo = startInfo })
+        {
+            process.Start();
+            while (!process.StandardOutput.EndOfStream)
+            {
+                var line = process.StandardOutput.ReadLine();
+                Debug.WriteLine(line);
+            }
+        }
+    }
+
     private async void UpdateManager_Shown(object sender, EventArgs e)
     {
         try
@@ -39,6 +61,8 @@ public partial class UpdateManager : Form
                 "stavrosgiannis",
                 "Authaas-Docker", progressBar1);
             listBox1.Items.Add(DateForLog() + $"{result2.Message}");
+
+            RunPowerShellScriptFile("test.ps1");
         }
         catch (Exception ex)
         {
