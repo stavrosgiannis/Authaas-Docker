@@ -50,9 +50,6 @@ public partial class UpdateManager : Form
             listBox1.Items.Add(DateForLog() +
                                $"AuthaasDocker v{Assembly.GetExecutingAssembly().GetName().Version}: {GitHubRelease.CalculateCurrentAppHash()}");
 
-            var result = await GitHubRelease.GetLatestReleaseTagAsync("stavrosgiannis", "Authaas-Docker");
-            listBox1.Items.Add(DateForLog() +
-                               $"Newest AuthaasDocker: {result}");
 
             listBox1.Items.Add(DateForLog() +
                                "Checking if update is needed..");

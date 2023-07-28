@@ -88,7 +88,7 @@ namespace Authaas_Docker.Models
                 return GenericResult.Ok("Downloading latest release..");
             }
 
-            return GenericResult.Ok("Newest Version already");
+            return GenericResult.Ok("Newest Version already!");
         }
 
 

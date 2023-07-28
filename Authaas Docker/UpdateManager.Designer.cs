@@ -59,6 +59,7 @@
             Controls.Add(listBox1);
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
             Name = "UpdateManager";
+            ShowInTaskbar = false;
             Text = "UpdateManager";
             Shown += UpdateManager_Shown;
             ResumeLayout(false);
