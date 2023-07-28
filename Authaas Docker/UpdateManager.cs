@@ -59,7 +59,7 @@ public partial class UpdateManager : Form
                 "Authaas-Docker", progressBar1);
             listBox1.Items.Add(DateForLog() + $"{result2.Message}");
 
-            RunPowerShellScriptFile("update.ps1");
+            if (result2.Message.Contains("Downloading")) RunPowerShellScriptFile("update.ps1");
         }
         catch (Exception ex)
         {
