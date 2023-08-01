@@ -7,7 +7,7 @@ namespace Authaas_Docker.Models
     public class GitHubRelease
     {
         private static readonly HttpClient Client = new();
-        public string? tag_name { get; set; }
+        public string? TagName { get; set; }
 
         /// <summary>
         ///     Calculates the current application hash.
@@ -107,7 +107,7 @@ namespace Authaas_Docker.Models
             var release = JsonSerializer.Deserialize<GitHubRelease>(json);
 
             // Remove the "commit-" prefix from the tag
-            var tag = release?.tag_name;
+            var tag = release?.TagName;
             if (tag != null && tag.StartsWith("sha1-")) tag = tag.Substring("sha1-".Length);
 
             return tag;
