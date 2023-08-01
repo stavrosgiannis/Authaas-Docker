@@ -1,2 +1,2 @@
 ﻿Git;Git repository;/VERYSILENT /NORESTART /NOCANCEL /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS;https://github.com/git-for-windows/git/releases/download/v2.41.0.windows.1/Git-2.41.0-64-bit.exe;git.exe;C:\Program Files\Git\cmd
-Rancher Desktop;Docker runner;/quiet;https://github.com/rancher-sandbox/rancher-desktop/releases/download/v1.9.0/Rancher.Desktop.Setup.1.9.0.msi;rancher desktop.msi;C:\Program Files\Rancher Desktop
+Rancher Desktop;Docker runner;/quiet /norestart;https://github.com/rancher-sandbox/rancher-desktop/releases/download/v1.9.0/Rancher.Desktop.Setup.1.9.0.msi;rancher desktop.msi;C:\Program Files\Rancher Desktop
