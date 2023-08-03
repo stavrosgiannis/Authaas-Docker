@@ -7,7 +7,7 @@ namespace Authaas_Docker.Services;
 public class GitHubRelease
 {
     private static readonly HttpClient Client = new();
-    public string? TagName { get; set; }
+    public string? tag_name { get; set; }
 
     /// <summary>
     ///     Calculates the current application hash.
@@ -78,8 +78,7 @@ public class GitHubRelease
 
         // Assuming that your tags are in the format "vX.Y.Z.X", we remove the leading 'v' 
         // to convert the tag into a version string
-        var latestVersionStr = latestTag.TrimStart('v');
-        var latestVersion = new Version(latestVersionStr);
+        var latestVersion = new Version(latestTag);
 
         // Compare the current version with the latest version
         if (currentVersion != null && currentVersion.CompareTo(latestVersion) < 0)
@@ -107,8 +106,8 @@ public class GitHubRelease
         var release = JsonSerializer.Deserialize<GitHubRelease>(json);
 
         // Remove the "commit-" prefix from the tag
-        var tag = release?.TagName;
-        if (tag != null && tag.StartsWith("sha1-")) tag = tag.Substring("sha1-".Length);
+        var tag = release?.tag_name;
+        if (tag != null && tag.StartsWith("v")) tag = tag.Substring("v".Length);
 
         return tag;
     }

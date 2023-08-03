@@ -42,14 +42,6 @@ jobs:
         files: ./publish/
         recursive: true
         dest: ./authaas-docker.zip
-        
-    - name: List publish directory
-      run: ls -l './Authaas Docker'
-
-    - name: Download sigcheck
-      run: |
-        Invoke-WebRequest -Uri "https://download.sysinternals.com/files/Sigcheck.zip" -OutFile "sigcheck.zip"
-        Expand-Archive -Path "sigcheck.zip" -DestinationPath "."
 
     - name: Extract version
       id: get_version
@@ -79,15 +71,5 @@ jobs:
         asset_name: authaas-docker.zip
         asset_content_type: application/zip
         
-    - name: Upload Additional Release Asset
-      id: upload-additional-authaas-release-asset 
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} 
-        asset_path: ./publish/AuthaasDocker.dll
-        asset_name: AuthaasDocker.dll
-        asset_content_type: application/octet-stream
         
 
