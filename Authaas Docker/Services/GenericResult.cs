@@ -1,4 +1,4 @@
-﻿namespace Authaas_Docker.Models;
+﻿namespace Authaas_Docker.Services;
 
 public class GenericResult
 {

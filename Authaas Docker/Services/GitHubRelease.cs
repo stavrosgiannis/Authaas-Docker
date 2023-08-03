@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text.Json;
 
-namespace Authaas_Docker.Models
+namespace Authaas_Docker.Services
 {
     public class GitHubRelease
     {

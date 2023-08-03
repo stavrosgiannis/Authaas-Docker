@@ -1,12 +1,13 @@
-﻿using System.IO;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 
+namespace Authaas_Docker.Services;
+
 public class IniFile
 {
-    private string _path;
-    private string _exe = Assembly.GetExecutingAssembly().GetName().Name;
+    private readonly string _path;
+    private readonly string _exe = Assembly.GetExecutingAssembly().GetName().Name;
 
     [DllImport("kernel32", CharSet = CharSet.Unicode)]
     private static extern long WritePrivateProfileString(string section, string key, string value, string filePath);
